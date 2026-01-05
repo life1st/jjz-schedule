@@ -4,7 +4,7 @@ import { Permit } from '../types/permit'
 import { renderTileContent, getTileClassName } from '../utils/calendarRenderer'
 import 'react-calendar/dist/Calendar.css'
 
-export type ExportDevice = 'desktop' | 'ipad' | 'iphone' | 'auto'
+import { ExportDevice, DEVICE_CONFIGS } from '../constants/export'
 
 interface ExportCalendarProps {
   permits: Permit[]
@@ -14,13 +14,6 @@ interface ExportCalendarProps {
 }
 
 const MAX_PERMITS = 12
-
-const DEVICE_CONFIGS = {
-  desktop: { width: 3840, height: 2160, cols: 4, padding: '120px', scale: 2 },
-  ipad: { width: 1536, height: 2048, cols: 3, padding: '50px', scale: 1 },
-  iphone: { width: 1170, height: 2532, cols: 2, padding: '40px', scale: 1 },
-  auto: { width: 1200, height: undefined, cols: 3, padding: '40px', scale: 1 }
-}
 
 export const ExportCalendar = ({ permits, year, device, id = 'export-calendar' }: ExportCalendarProps) => {
   if (permits.length === 0) return null
@@ -83,8 +76,8 @@ export const ExportCalendar = ({ permits, year, device, id = 'export-calendar' }
         boxSizing: 'border-box'
       }}
     >
-      <div style={{ textAlign: 'center', marginBottom: `${40 * config.scale}px` }}>
-        <h1 style={{ fontSize: `${48 * config.scale}px`, fontWeight: 'bold', marginBottom: `${16 * config.scale}px`, textShadow: `0 ${4 * config.scale}px ${12 * config.scale}px rgba(0,0,0,0.2)` }}>
+      <div style={{ textAlign: 'center', marginBottom: `${50 * config.scale}px` }}>
+        <h1 style={{ fontSize: `${56 * config.scale}px`, fontWeight: 'bold', marginBottom: `${16 * config.scale}px`, textShadow: `0 ${4 * config.scale}px ${12 * config.scale}px rgba(0,0,0,0.2)` }}>
           {year}年 进京证排期全览
         </h1>
         <p style={{ fontSize: `${24 * config.scale}px`, opacity: 0.9 }}>
@@ -94,19 +87,18 @@ export const ExportCalendar = ({ permits, year, device, id = 'export-calendar' }
 
       <div style={{ 
         display: 'grid', 
-        gridTemplateColumns: `repeat(${config.cols}, 1fr)`,
-        gap: `${30 * config.scale}px`,
+        gridTemplateColumns: `repeat(${config.cols}, 1fr)`, 
+        gap: `${24 * config.scale}px`,
         background: 'rgba(255, 255, 255, 0.95)',
-        padding: `${30 * config.scale}px`,
+        padding: `${32 * config.scale}px`,
         borderRadius: `${24 * config.scale}px`,
         boxShadow: `0 ${20 * config.scale}px ${60 * config.scale}px rgba(0, 0, 0, 0.3)`,
-        margin: device !== 'auto' ? '0 auto' : '0',
-        transform: `scale(${config.scale === 2 ? 1.5 : 1})`, // Boost calendar size for 4K
-        transformOrigin: 'center'
+        margin: '0 auto',
+        width: 'fit-content'
       }}>
         {months.map((monthDate, index) => (
           <div key={index} className="single-calendar-wrapper" style={{ zoom: config.scale }}>
-            <h3 className="calendar-month-title" style={{ textAlign: 'center', color: '#1a237e', marginBottom: `${20 * config.scale}px`, fontWeight: 'bold', fontSize: `${20 * config.scale}px` }}>
+            <h3 className="calendar-month-title" style={{ textAlign: 'center', color: '#1a237e', marginBottom: `${16}px`, fontWeight: 'bold', fontSize: `${18}px` }}>
               {dayjs(monthDate).format('YYYY年 M月')}
             </h3>
             <Calendar
@@ -122,8 +114,8 @@ export const ExportCalendar = ({ permits, year, device, id = 'export-calendar' }
         ))}
       </div>
 
-      <div style={{ marginTop: `${40 * config.scale}px`, textAlign: 'center', fontSize: `${18 * config.scale}px`, opacity: 0.7 }}>
-        生成于：{dayjs().format('YYYY-MM-DD HH:mm:ss')} | 4K 高清优化 ({device.toUpperCase()})
+      <div style={{ marginTop: `${60 * config.scale}px`, textAlign: 'center', fontSize: `${20 * config.scale}px`, opacity: 0.7 }}>
+        生成于：{dayjs().format('YYYY-MM-DD HH:mm:ss')} | 4K 高清壁纸
       </div>
     </div>
   )

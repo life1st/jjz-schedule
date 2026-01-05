@@ -3,7 +3,8 @@ import Calendar from 'react-calendar'
 import dayjs from 'dayjs'
 import { Permit } from '../types/permit'
 import { renderTileContent, getTileClassName } from '../utils/calendarRenderer'
-import { ExportCalendar, ExportDevice } from '../components/ExportCalendar'
+import { ExportCalendar } from '../components/ExportCalendar'
+import { ExportDevice, DEVICE_CONFIGS } from '../constants/export'
 import 'react-calendar/dist/Calendar.css'
 import './SchedulePage.scss'
 import { toPng } from 'html-to-image'
@@ -11,13 +12,6 @@ import { toPng } from 'html-to-image'
 const STORAGE_KEY = 'jjz-schedule-permits'
 const MAX_PERMITS = 12
 const PERMIT_DURATION_DAYS = 7
-
-const DEVICE_DIMENSIONS = {
-  desktop: { width: 3840, height: 2160 },
-  ipad: { width: 1536, height: 2048 },
-  iphone: { width: 1170, height: 2532 },
-  auto: { width: 1200, height: undefined }
-}
 
 function SchedulePage() {
   const [permits, setPermits] = useState<Permit[]>([])
@@ -156,13 +150,13 @@ function SchedulePage() {
     const element = document.getElementById('export-calendar')
     if (!element) return
 
-    const dim = DEVICE_DIMENSIONS[exportDevice]
+    const config = DEVICE_CONFIGS[exportDevice]
 
     try {
       const dataUrl = await toPng(element, {
         cacheBust: true,
-        width: dim.width,
-        height: dim.height || element.offsetHeight || element.scrollHeight,
+        width: config.width,
+        height: config.height || element.offsetHeight || element.scrollHeight,
         style: {
           opacity: '1',
           zIndex: 'auto',
