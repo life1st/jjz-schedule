@@ -4,16 +4,28 @@ import { Permit } from '../types/permit'
 import { renderTileContent, getTileClassName } from '../utils/calendarRenderer'
 import 'react-calendar/dist/Calendar.css'
 
+export type ExportDevice = 'desktop' | 'ipad' | 'iphone' | 'auto'
+
 interface ExportCalendarProps {
   permits: Permit[]
   year: number
+  device: ExportDevice
   id?: string
 }
 
 const MAX_PERMITS = 12
 
-export const ExportCalendar = ({ permits, year, id = 'export-calendar' }: ExportCalendarProps) => {
+const DEVICE_CONFIGS = {
+  desktop: { width: 3840, height: 2160, cols: 4, padding: '120px', scale: 2 },
+  ipad: { width: 1536, height: 2048, cols: 3, padding: '50px', scale: 1 },
+  iphone: { width: 1170, height: 2532, cols: 2, padding: '40px', scale: 1 },
+  auto: { width: 1200, height: undefined, cols: 3, padding: '40px', scale: 1 }
+}
+
+export const ExportCalendar = ({ permits, year, device, id = 'export-calendar' }: ExportCalendarProps) => {
   if (permits.length === 0) return null
+
+  const config = DEVICE_CONFIGS[device]
 
   // Filter permits that START in this year for the quota display
   const yearStartsCount = permits.filter(p => dayjs(p.startDate).year() === year).length
@@ -22,7 +34,6 @@ export const ExportCalendar = ({ permits, year, id = 'export-calendar' }: Export
   const sortedPermits = [...permits].sort((a, b) => a.startDate.getTime() - b.startDate.getTime())
   
   // Find effective start and end month for the target year
-  // We only care about permits that overlap with the target year
   const yearStart = dayjs().year(year).startOf('year')
   const yearEnd = dayjs().year(year).endOf('year')
 
@@ -33,18 +44,14 @@ export const ExportCalendar = ({ permits, year, id = 'export-calendar' }: Export
     return pStart.year() === year || pEnd.year() === year || (pStart.isBefore(yearStart) && pEnd.isAfter(yearEnd))
   })
 
-  if (yearPermits.length === 0) return null // No permits for this year
+  if (yearPermits.length === 0) return null
 
-  // Determine the month range to render
-  // Start from the month of the first relevant permit (clipped to Jan)
   let startMonth = dayjs(yearPermits[0].startDate).startOf('month')
   if (startMonth.year() < year) startMonth = yearStart.startOf('month')
 
-  // End at the month of the last relevant permit (clipped to Dec)
   let endMonth = dayjs(yearPermits[yearPermits.length - 1].endDate).endOf('month')
   if (endMonth.year() > year) endMonth = yearEnd.endOf('month')
 
-  // Generate all months in range
   const months: Date[] = []
   let current = startMonth
   while (current.isBefore(endMonth) || current.isSame(endMonth, 'month')) {
@@ -55,7 +62,7 @@ export const ExportCalendar = ({ permits, year, id = 'export-calendar' }: Export
   return (
     <div 
       id={id}
-      className="export-calendar-container"
+      className={`export-calendar-container device-${device}`}
       style={{
         position: 'absolute',
         left: 0,
@@ -63,31 +70,43 @@ export const ExportCalendar = ({ permits, year, id = 'export-calendar' }: Export
         zIndex: -9999,
         opacity: 0,
         pointerEvents: 'none',
-        width: '1200px', // Fixed width for consistent export
-        padding: '40px',
+        width: `${config.width}px`,
+        height: config.height ? `${config.height}px` : 'auto',
+        minHeight: config.height ? `${config.height}px` : 'auto',
+        padding: config.padding,
         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        color: 'white'
+        color: 'white',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: device !== 'auto' ? 'center' : 'flex-start',
+        overflow: 'hidden',
+        boxSizing: 'border-box'
       }}
     >
-      <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-        <h1 style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '10px' }}>{year}年 进京证排期表</h1>
-        <p style={{ fontSize: '18px', opacity: 0.9 }}>
+      <div style={{ textAlign: 'center', marginBottom: `${40 * config.scale}px` }}>
+        <h1 style={{ fontSize: `${48 * config.scale}px`, fontWeight: 'bold', marginBottom: `${16 * config.scale}px`, textShadow: `0 ${4 * config.scale}px ${12 * config.scale}px rgba(0,0,0,0.2)` }}>
+          {year}年 进京证排期全览
+        </h1>
+        <p style={{ fontSize: `${24 * config.scale}px`, opacity: 0.9 }}>
           {year}年共安排 <strong>{yearStartsCount}</strong> / {MAX_PERMITS} 次进京证
         </p>
       </div>
 
       <div style={{ 
         display: 'grid', 
-        gridTemplateColumns: 'repeat(3, 1fr)', 
-        gap: '24px',
-        background: 'white',
-        padding: '24px',
-        borderRadius: '16px',
-        boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15)'
+        gridTemplateColumns: `repeat(${config.cols}, 1fr)`,
+        gap: `${30 * config.scale}px`,
+        background: 'rgba(255, 255, 255, 0.95)',
+        padding: `${30 * config.scale}px`,
+        borderRadius: `${24 * config.scale}px`,
+        boxShadow: `0 ${20 * config.scale}px ${60 * config.scale}px rgba(0, 0, 0, 0.3)`,
+        margin: device !== 'auto' ? '0 auto' : '0',
+        transform: `scale(${config.scale === 2 ? 1.5 : 1})`, // Boost calendar size for 4K
+        transformOrigin: 'center'
       }}>
         {months.map((monthDate, index) => (
-          <div key={index} className="single-calendar-wrapper">
-             <h3 className="calendar-month-title" style={{ textAlign: 'center', color: '#333', marginBottom: '16px', fontWeight: 'bold' }}>
+          <div key={index} className="single-calendar-wrapper" style={{ zoom: config.scale }}>
+            <h3 className="calendar-month-title" style={{ textAlign: 'center', color: '#1a237e', marginBottom: `${20 * config.scale}px`, fontWeight: 'bold', fontSize: `${20 * config.scale}px` }}>
               {dayjs(monthDate).format('YYYY年 M月')}
             </h3>
             <Calendar
@@ -103,8 +122,8 @@ export const ExportCalendar = ({ permits, year, id = 'export-calendar' }: Export
         ))}
       </div>
 
-      <div style={{ marginTop: '24px', textAlign: 'center', fontSize: '14px', opacity: 0.8 }}>
-        生成时间：{dayjs().format('YYYY-MM-DD HH:mm:ss')}
+      <div style={{ marginTop: `${40 * config.scale}px`, textAlign: 'center', fontSize: `${18 * config.scale}px`, opacity: 0.7 }}>
+        生成于：{dayjs().format('YYYY-MM-DD HH:mm:ss')} | 4K 高清优化 ({device.toUpperCase()})
       </div>
     </div>
   )

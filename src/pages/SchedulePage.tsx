@@ -3,7 +3,7 @@ import Calendar from 'react-calendar'
 import dayjs from 'dayjs'
 import { Permit } from '../types/permit'
 import { renderTileContent, getTileClassName } from '../utils/calendarRenderer'
-import { ExportCalendar } from '../components/ExportCalendar'
+import { ExportCalendar, ExportDevice } from '../components/ExportCalendar'
 import 'react-calendar/dist/Calendar.css'
 import './SchedulePage.scss'
 import { toPng } from 'html-to-image'
@@ -12,8 +12,16 @@ const STORAGE_KEY = 'jjz-schedule-permits'
 const MAX_PERMITS = 12
 const PERMIT_DURATION_DAYS = 7
 
+const DEVICE_DIMENSIONS = {
+  desktop: { width: 3840, height: 2160 },
+  ipad: { width: 1536, height: 2048 },
+  iphone: { width: 1170, height: 2532 },
+  auto: { width: 1200, height: undefined }
+}
+
 function SchedulePage() {
   const [permits, setPermits] = useState<Permit[]>([])
+  const [exportDevice, setExportDevice] = useState<ExportDevice>('auto')
 
   // Helper to update state and localStorage simultaneously
   const updatePermits = (newPermits: Permit[]) => {
@@ -148,11 +156,13 @@ function SchedulePage() {
     const element = document.getElementById('export-calendar')
     if (!element) return
 
+    const dim = DEVICE_DIMENSIONS[exportDevice]
+
     try {
       const dataUrl = await toPng(element, {
         cacheBust: true,
-        width: 1200,
-        height: element.offsetHeight || element.scrollHeight, // Prefer offsetHeight for visible elements
+        width: dim.width,
+        height: dim.height || element.offsetHeight || element.scrollHeight,
         style: {
           opacity: '1',
           zIndex: 'auto',
@@ -161,7 +171,7 @@ function SchedulePage() {
       })
 
       const link = document.createElement('a')
-      link.download = `进京证排期全览_${currentYear}_${dayjs().format('YYYY-MM-DD')}.png`
+      link.download = `进京证排期_${exportDevice}_${currentYear}_${dayjs().format('YYYYMMDD')}.png`
       link.href = dataUrl
       link.click()
     } catch (error) {
@@ -172,21 +182,34 @@ function SchedulePage() {
 
   return (
     <div className="schedule-page">
-      <ExportCalendar permits={permits} year={currentYear} />
+      <ExportCalendar permits={permits} year={currentYear} device={exportDevice} />
       
       <header className="page-header">
         <h1>进京证排期工具</h1>
         <p className="subtitle">
           {currentYear}年已安排 <strong>{permitsInViewYear.length}</strong> / {MAX_PERMITS} 次
         </p>
-        <button
-          className="export-btn"
-          onClick={handleExportImage}
-          disabled={permitsInViewYear.length < MAX_PERMITS}
-          title={permitsInViewYear.length < MAX_PERMITS ? `需安排满${MAX_PERMITS}次${currentYear}年的排期` : "导出为图片"}
-        >
-          {permitsInViewYear.length < MAX_PERMITS ? `还可安排 ${MAX_PERMITS - permitsInViewYear.length} 次 (${currentYear}年)` : '📸 导出排期图片'}
-        </button>
+        <div className="export-controls">
+          <div className="device-selector">
+            {(['auto', 'desktop', 'ipad', 'iphone'] as ExportDevice[]).map(d => (
+              <button
+                key={d}
+                className={`device-btn ${exportDevice === d ? 'active' : ''}`}
+                onClick={() => setExportDevice(d)}
+              >
+                {d === 'auto' ? '长图' : d.toUpperCase()}
+              </button>
+            ))}
+          </div>
+          <button
+            className="export-btn"
+            onClick={handleExportImage}
+            disabled={permitsInViewYear.length < MAX_PERMITS}
+            title={permitsInViewYear.length < MAX_PERMITS ? `需安排满${MAX_PERMITS}次${currentYear}年的排期` : "导出为图片"}
+          >
+            {permitsInViewYear.length < MAX_PERMITS ? `还差 ${MAX_PERMITS - permitsInViewYear.length} 次` : '📸 导出'}
+          </button>
+        </div>
       </header>
 
       <div className="content-container">

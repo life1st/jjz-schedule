@@ -19,21 +19,42 @@
       @apply text-xl text-[#ffd700];
     }
   }
-.export-btn {
-  @apply mt-6 px-6 py-2 rounded-full font-bold bg-white/20 text-white backdrop-blur-sm border border-white/30 transition-all duration-200;
+    .export-controls {
+      @apply flex flex-col items-center gap-4;
+  
+      .device-selector {
+        @apply flex bg-white rounded-xl p-1 shadow-sm border border-gray-100;
+  
+        .device-btn {
+          @apply px-3 py-1.5 rounded-lg text-sm font-medium transition-all;
+          color: #64748b;
+  
+          &:hover {
+            @apply bg-gray-50;
+          }
+  
+          &.active {
+            @apply bg-[#667eea] text-white shadow-md;
+          }
+        }
+      }
+        .export-btn {
+      @apply px-8 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl font-bold shadow-lg transition-all;
+        @apply flex items-center gap-2;
 
-  &:hover:not(:disabled) {
-    @apply bg-white/30 scale-105;
-  }
+      &:hover:not(:disabled) {
+        @apply transform -translate-y-0.5 shadow-xl brightness-110;
+        }
 
-  &:active:not(:disabled) {
-    @apply scale-95;
-  }
+            &:active:not(:disabled) {
+        @apply scale-95 shadow-md;
+        }
 
-  &:disabled {
-    @apply opacity-50 cursor-not-allowed bg-black/10 border-transparent text-gray-300;
-  }
-}
+            &:disabled {
+        @apply opacity-50 cursor-not-allowed saturate-0;
+        }
+        }
+        }
 }
 
 .content-container {
