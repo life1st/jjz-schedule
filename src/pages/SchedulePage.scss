@@ -57,6 +57,21 @@
       }
     }
   }
+.year-selector {
+  @apply mx-2;
+
+  .year-select {
+    @apply px-4 py-2 rounded-lg font-semibold text-[#667eea] bg-gray-50 border border-transparent cursor-pointer transition-all duration-200 outline-none appearance-none;
+
+    &:hover {
+      @apply bg-gray-100 border-gray-200;
+    }
+
+    &:focus {
+      @apply ring-2 ring-[#667eea]/50;
+    }
+  }
+}
 }
 
 .calendars-row {

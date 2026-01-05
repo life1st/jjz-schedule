@@ -186,12 +186,21 @@ function SchedulePage() {
     setViewDate(new Date())
   }
 
+  // Year Selection
+  const currentYear = viewDate.getFullYear()
+  const years = Array.from({ length: 11 }, (_, i) => currentYear - 5 + i) // Current year +/- 5 years
+
+  const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newYear = parseInt(e.target.value, 10)
+    setViewDate(dayjs(viewDate).year(newYear).toDate())
+  }
+
   return (
     <div className="schedule-page">
       <header className="page-header">
         <h1>进京证排期工具</h1>
         <p className="subtitle">
-          已使用 <strong>{permits.length}</strong> / {MAX_PERMITS} 次
+          已安排 <strong>{permits.length}</strong> / {MAX_PERMITS} 次
         </p>
       </header>
 
@@ -199,6 +208,17 @@ function SchedulePage() {
         <div className="calendar-section">
           <div className="calendar-controls">
             <button onClick={handlePrevMonth} className="nav-btn">&lt; 上个月</button>
+
+            <div className="year-selector">
+              <select value={currentYear} onChange={handleYearChange} className="year-select">
+                {years.map((year) => (
+                  <option key={year} value={year}>
+                    {year}年
+                  </option>
+                ))}
+              </select>
+            </div>
+
             <button onClick={handleToday} className="nav-btn today-btn">今天</button>
             <button onClick={handleNextMonth} className="nav-btn">下个月 &gt;</button>
           </div>
