@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import SchedulePage from './pages/SchedulePage'
-import './App.css'
+import SchedulePage from './pages/SchedulePage.tsx'
+
 
 function App() {
   return (

@@ -3,7 +3,7 @@ import Calendar from 'react-calendar'
 import dayjs from 'dayjs'
 import { Permit } from '../types/permit'
 import 'react-calendar/dist/Calendar.css'
-import './SchedulePage.css'
+import './SchedulePage.scss'
 
 const STORAGE_KEY = 'jjz-schedule-permits'
 const MAX_PERMITS = 12

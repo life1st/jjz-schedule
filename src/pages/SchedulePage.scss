@@ -1,0 +1,164 @@
+@import "tailwindcss";
+.schedule-page {
+  @apply min-h-screen p-8;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.page-header {
+  @apply text-center text-white mb-8;
+
+  h1 {
+    @apply text-4xl font-bold mb-2;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  }
+
+  .subtitle {
+    @apply text-lg opacity-95;
+
+    strong {
+      @apply text-xl text-[#ffd700];
+    }
+  }
+}
+
+.content-container {
+  @apply max-w-[1200px] mx-auto grid grid-cols-1 gap-8;
+
+  @media (min-width: 969px) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Calendar Section */
+.calendar-section {
+  @apply bg-white rounded-2xl p-8 transition-all duration-300 ease-in-out;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+
+  &:hover {
+    @apply -translate-y-1;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+  }
+}
+
+/* React Calendar Customization */
+.react-calendar {
+  @apply w-full border-none font-[inherit] text-gray-800;
+}
+
+.react-calendar__tile {
+  @apply p-4 text-[0.95rem] rounded-lg relative transition-all duration-200 ease-in-out;
+
+  &:enabled:hover {
+    @apply scale-105;
+    background-color: #f0f0f0;
+  }
+
+  &--active {
+    @apply text-white;
+    background: #667eea;
+  }
+
+  &.has-permit {
+    @apply text-white font-semibold;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+    &:enabled:hover {
+      @apply scale-110;
+      background: linear-gradient(135deg, #5568d3 0%, #65408b 100%);
+    }
+  }
+}
+
+.react-calendar__navigation button {
+  @apply text-lg font-semibold text-[#667eea] p-3 rounded-lg transition-all duration-200 ease-in-out;
+
+  &:enabled:hover {
+    @apply bg-gray-100;
+  }
+}
+
+.react-calendar__month-view__weekdays {
+  @apply font-semibold text-[#667eea] uppercase text-sm;
+}
+
+.permit-marker {
+  @apply absolute bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-[#ffd700] rounded-full;
+}
+
+.calendar-legend {
+  @apply mt-6 pt-6 border-t border-gray-200;
+}
+
+.legend-item {
+  @apply flex items-center gap-2 text-sm text-gray-500;
+}
+
+.legend-marker {
+  @apply w-6 h-6 rounded-md inline-block;
+
+  &.has-permit {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+}
+
+/* Permits Section */
+.permits-section {
+  @apply bg-white rounded-2xl p-8 transition-all duration-300 ease-in-out;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+
+  &:hover {
+    @apply -translate-y-1;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+  }
+
+  h2 {
+    @apply text-2xl text-gray-800 mb-6 font-bold;
+  }
+}
+
+.empty-message {
+  @apply text-center text-gray-400 py-12 text-base;
+}
+
+.permits-list {
+  @apply list-none p-0 m-0 flex flex-col gap-4;
+}
+
+.permit-item {
+  @apply flex justify-between items-center p-4 rounded-xl transition-all duration-300 ease-in-out border-l-4 border-[#667eea];
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+
+  &:hover {
+    @apply translate-x-1 shadow-lg;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+  }
+}
+
+.permit-info {
+  @apply flex flex-col gap-1;
+}
+
+.permit-number {
+  @apply text-sm font-bold text-[#667eea];
+}
+
+.permit-dates {
+  @apply text-base font-semibold text-gray-800;
+}
+
+.permit-duration {
+  @apply text-xs text-gray-500;
+}
+
+.remove-button {
+  @apply bg-[#ff4757] text-white border-0 w-8 h-8 rounded-full text-lg cursor-pointer transition-all duration-200 ease-in-out flex items-center justify-center shrink-0;
+
+  &:hover {
+    @apply bg-[#ee5a6f] scale-110 -rotate-90;
+    box-shadow: 0 4px 12px rgba(255, 71, 87, 0.3);
+  }
+
+  &:active {
+    @apply scale-95;
+  }
+}
