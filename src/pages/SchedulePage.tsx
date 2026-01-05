@@ -125,6 +125,21 @@ function SchedulePage() {
     setPermits(permits.filter((p) => p.id !== id))
   }
 
+  const [viewDate, setViewDate] = useState(new Date())
+
+  // Navigation handlers
+  const handlePrevMonth = () => {
+    setViewDate(dayjs(viewDate).subtract(1, 'month').toDate())
+  }
+
+  const handleNextMonth = () => {
+    setViewDate(dayjs(viewDate).add(1, 'month').toDate())
+  }
+
+  const handleToday = () => {
+    setViewDate(new Date())
+  }
+
   return (
     <div className="schedule-page">
       <header className="page-header">
@@ -136,16 +151,39 @@ function SchedulePage() {
 
       <div className="content-container">
         <div className="calendar-section">
-          <Calendar
-            onClickDay={handleDateClick}
-            tileContent={tileContent}
-            tileClassName={tileClassName}
-            locale="zh-CN"
-          />
+          <div className="calendar-controls">
+            <button onClick={handlePrevMonth} className="nav-btn">&lt; 上个月</button>
+            <button onClick={handleToday} className="nav-btn today-btn">今天</button>
+            <button onClick={handleNextMonth} className="nav-btn">下个月 &gt;</button>
+          </div>
+
+          <div className="calendars-row">
+            {[0, 1, 2].map((offset) => {
+              const currentDate = dayjs(viewDate).add(offset, 'month')
+              return (
+                <div key={offset} className="single-calendar-wrapper">
+                  <h3 className="calendar-month-title">
+                    {currentDate.format('YYYY年 M月')}
+                  </h3>
+                  <Calendar
+                    activeStartDate={currentDate.toDate()}
+                    onClickDay={handleDateClick}
+                    tileContent={tileContent}
+                    tileClassName={tileClassName}
+                    locale="zh-CN"
+                    showNavigation={false}
+                    showNeighboringMonth={false}
+                    formatDay={(_, date) => dayjs(date).format('D')}
+                  />
+                </div>
+              )
+            })}
+          </div>
+
           <div className="calendar-legend">
             <div className="legend-item">
               <span className="legend-marker has-permit"></span>
-              <span>已选日期（点击可删除）</span>
+              <span>已选日期（点击可删除，重叠日期自动合并）</span>
             </div>
           </div>
         </div>

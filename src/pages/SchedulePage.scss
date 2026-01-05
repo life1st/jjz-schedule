@@ -31,15 +31,45 @@
 
 /* Calendar Section */
 .calendar-section {
-  @apply bg-white rounded-2xl p-8 transition-all duration-300 ease-in-out;
+  @apply bg-white rounded-2xl p-6 transition-all duration-300 ease-in-out col-span-full;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
 
   &:hover {
-    @apply -translate-y-1;
     box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
   }
 }
 
+.calendar-controls {
+  @apply flex justify-between items-center mb-6 px-4;
+
+  .nav-btn {
+    @apply px-4 py-2 rounded-lg font-semibold text-[#667eea] transition-colors duration-200;
+
+    &:hover {
+      @apply bg-gray-100;
+    }
+
+    &.today-btn {
+      @apply bg-[#667eea] text-white;
+
+      &:hover {
+        @apply bg-[#5568d3];
+      }
+    }
+  }
+}
+
+.calendars-row {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
+}
+
+.single-calendar-wrapper {
+  @apply flex flex-col;
+
+  .calendar-month-title {
+    @apply text-center text-xl font-bold text-gray-800 mb-4 pb-2 border-b border-gray-100;
+  }
+}
 /* React Calendar Customization */
 .react-calendar {
   @apply w-full border-none font-[inherit] text-gray-800;
