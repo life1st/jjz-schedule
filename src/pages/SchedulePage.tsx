@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
 import Calendar from 'react-calendar'
 import dayjs from 'dayjs'
-// @ts-ignore
-import { Solar, HolidayUtil } from 'lunar-javascript'
 import { Permit } from '../types/permit'
+import { renderTileContent, getTileClassName } from '../utils/calendarRenderer'
+import { ExportCalendar } from '../components/ExportCalendar'
 import 'react-calendar/dist/Calendar.css'
 import './SchedulePage.scss'
+import { toPng } from 'html-to-image'
 
 const STORAGE_KEY = 'jjz-schedule-permits'
 const MAX_PERMITS = 12
@@ -13,6 +14,12 @@ const PERMIT_DURATION_DAYS = 7
 
 function SchedulePage() {
   const [permits, setPermits] = useState<Permit[]>([])
+
+  // Helper to update state and localStorage simultaneously
+  const updatePermits = (newPermits: Permit[]) => {
+    setPermits(newPermits)
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(newPermits))
+  }
 
   // Load permits from localStorage on mount
   useEffect(() => {
@@ -32,21 +39,6 @@ function SchedulePage() {
     }
   }, [])
 
-  // Save permits to localStorage whenever they change
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(permits))
-  }, [permits])
-
-  // Check if a date is within any existing permit
-  const isDateInPermit = (date: Date): boolean => {
-    return permits.some((permit) => {
-      const checkDate = dayjs(date).startOf('day')
-      const start = dayjs(permit.startDate).startOf('day')
-      const end = dayjs(permit.endDate).startOf('day')
-      return checkDate.isSame(start) || checkDate.isSame(end) || (checkDate.isAfter(start) && checkDate.isBefore(end))
-    })
-  }
-
   // Handle date click
   const handleDateClick = (date: Date) => {
     // Check if clicking on an existing permit to remove it
@@ -59,7 +51,7 @@ function SchedulePage() {
 
     if (existingPermit) {
       // Remove the permit
-      setPermits(permits.filter((p) => p.id !== existingPermit.id))
+      updatePermits(permits.filter((p) => p.id !== existingPermit.id))
       return
     }
 
@@ -90,9 +82,12 @@ function SchedulePage() {
       (p) => !conflictingPermits.some((cp) => cp.id === p.id)
     )
 
-    // Check if we've reached the maximum number of permits after removing conflicts
-    if (permitsAfterRemoval.length >= MAX_PERMITS) {
-      alert(`最多只能添加 ${MAX_PERMITS} 次进京证`)
+    // Check if we've reached the maximum number of permits for the TARGET year
+    const targetYear = newStartDate.year()
+    const permitsInTargetYear = permitsAfterRemoval.filter(p => dayjs(p.startDate).year() === targetYear)
+
+    if (permitsInTargetYear.length >= MAX_PERMITS) {
+      alert(`${targetYear}年 最多只能添加 ${MAX_PERMITS} 次进京证`)
       return
     }
 
@@ -103,75 +98,29 @@ function SchedulePage() {
       endDate: newEndDate.toDate(),
     }
 
-    setPermits([...permitsAfterRemoval, newPermit].sort((a, b) => a.startDate.getTime() - b.startDate.getTime()))
-  }
-
-  // Custom tile content to highlight permit dates
-  const tileContent = ({ date }: { date: Date }) => {
-    const content = []
-
-    const solar = Solar.fromDate(date)
-    const lunar = solar.getLunar()
-    
-    // Lunar Info
-    const festivals = lunar.getFestivals()
-    const lunarText = festivals.length > 0 ? festivals[0] : lunar.getDayInChinese()
-
-    // Solar/Government Holiday Info
-    const dateStr = dayjs(date).format('YYYY-MM-DD')
-    const holidayData = HolidayUtil.getHoliday(dateStr)
-
-    // Identify if holiday is a Lunar holiday
-    const isLunarHoliday = holidayData && ['春节', '清明节', '端午节', '中秋节'].includes(holidayData.getName())
-
-    let shouldShowLunar = false
-    
-    if (holidayData) {
-       // Only show Lunar if it is a Lunar Festival (vacation or markup workday)
-       shouldShowLunar = !!isLunarHoliday
-    }
-
-    if (holidayData && !holidayData.isWork()) {
-      content.push(
-        <div key="holiday" className="holiday-text">
-          {holidayData.getName()}
-        </div>
-      )
-    } else if (holidayData && holidayData.isWork()) {
-      content.push(
-        <div key="work" className="workday-text">班</div>
-      )
-    }
-
-    if (shouldShowLunar) {
-      content.push(
-        <div key="lunar" className="lunar-text">
-          {lunarText}
-        </div>
-      )
-    }
-
-    if (isDateInPermit(date)) {
-      content.push(<div key="marker" className="permit-marker"></div>)
-    }
-    
-    return <div className="tile-content">{content}</div>
-  }
-
-  // Custom tile class name
-  const tileClassName = ({ date }: { date: Date }) => {
-    if (isDateInPermit(date)) {
-      return 'has-permit'
-    }
-    return ''
+    updatePermits([...permitsAfterRemoval, newPermit].sort((a, b) => a.startDate.getTime() - b.startDate.getTime()))
   }
 
   // Remove a permit by ID
   const removePermit = (id: string) => {
-    setPermits(permits.filter((p) => p.id !== id))
+    updatePermits(permits.filter((p) => p.id !== id))
+  }
+
+  // Clear all permits
+  const handleClearAll = () => {
+    if (permits.length === 0) return
+    if (window.confirm('确定要清空所有已排期的日期吗？此操作无法撤销。')) {
+      updatePermits([])
+    }
   }
 
   const [viewDate, setViewDate] = useState(new Date())
+
+  // Year Selection
+  const currentYear = viewDate.getFullYear()
+
+  // Permits in the currently viewed year (for display/validation)
+  const permitsInViewYear = permits.filter(p => dayjs(p.startDate).year() === currentYear)
 
   // Navigation handlers
   const handlePrevMonth = () => {
@@ -186,8 +135,6 @@ function SchedulePage() {
     setViewDate(new Date())
   }
 
-  // Year Selection
-  const currentYear = viewDate.getFullYear()
   const years = Array.from({ length: 11 }, (_, i) => currentYear - 5 + i) // Current year +/- 5 years
 
   const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -195,13 +142,51 @@ function SchedulePage() {
     setViewDate(dayjs(viewDate).year(newYear).toDate())
   }
 
+  const handleExportImage = async () => {
+    if (permitsInViewYear.length < MAX_PERMITS) return
+
+    const element = document.getElementById('export-calendar')
+    if (!element) return
+
+    try {
+      const dataUrl = await toPng(element, {
+        cacheBust: true,
+        width: 1200,
+        height: element.offsetHeight || element.scrollHeight, // Prefer offsetHeight for visible elements
+        style: {
+          opacity: '1',
+          zIndex: 'auto',
+          visibility: 'visible'
+        }
+      })
+
+      const link = document.createElement('a')
+      link.download = `进京证排期全览_${currentYear}_${dayjs().format('YYYY-MM-DD')}.png`
+      link.href = dataUrl
+      link.click()
+    } catch (error) {
+      console.error('Export failed:', error)
+      alert('图片导出失败，请重试')
+    }
+  }
+
   return (
     <div className="schedule-page">
+      <ExportCalendar permits={permits} year={currentYear} />
+      
       <header className="page-header">
         <h1>进京证排期工具</h1>
         <p className="subtitle">
-          已安排 <strong>{permits.length}</strong> / {MAX_PERMITS} 次
+          {currentYear}年已安排 <strong>{permitsInViewYear.length}</strong> / {MAX_PERMITS} 次
         </p>
+        <button
+          className="export-btn"
+          onClick={handleExportImage}
+          disabled={permitsInViewYear.length < MAX_PERMITS}
+          title={permitsInViewYear.length < MAX_PERMITS ? `需安排满${MAX_PERMITS}次${currentYear}年的排期` : "导出为图片"}
+        >
+          {permitsInViewYear.length < MAX_PERMITS ? `还需安排 ${MAX_PERMITS - permitsInViewYear.length} 次 (${currentYear}年)` : '📸 导出排期图片'}
+        </button>
       </header>
 
       <div className="content-container">
@@ -234,8 +219,8 @@ function SchedulePage() {
                   <Calendar
                     activeStartDate={currentDate.toDate()}
                     onClickDay={handleDateClick}
-                    tileContent={tileContent}
-                    tileClassName={tileClassName}
+                    tileContent={(args) => renderTileContent(args.date, permits)}
+                    tileClassName={(args) => getTileClassName(args.date, permits)}
                     locale="zh-CN"
                     showNavigation={false}
                     showNeighboringMonth={false}
@@ -255,7 +240,19 @@ function SchedulePage() {
         </div>
 
         <div className="permits-section">
-          <h2>已选日期列表</h2>
+          <div className="permits-header">
+            <h2>已选日期列表</h2>
+            {permits.length > 0 && (
+              <button
+                onClick={handleClearAll}
+                className="clear-all-btn"
+                title="清空所有排期"
+              >
+                重置/清空
+              </button>
+            )}
+          </div>
+
           {permits.length === 0 ? (
             <p className="empty-message">暂无已选日期，点击日历上的日期开始添加</p>
           ) : (
