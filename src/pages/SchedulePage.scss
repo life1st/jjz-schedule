@@ -1,60 +1,61 @@
 @import "tailwindcss";
+
 .schedule-page {
-  @apply min-h-screen p-8;
+  @apply min-h-screen p-8 bg-[#f8fafc] pb-20 overflow-x-auto;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 .page-header {
-  @apply text-center text-white mb-8;
+  @apply text-center text-white mb-12;
 
   h1 {
-    @apply text-4xl font-bold mb-2;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    @apply text-4xl font-bold mb-3;
+    text-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   }
 
   .subtitle {
-    @apply text-lg opacity-95;
-
+    @apply text-lg opacity-90 mb-8;
     strong {
-      @apply text-xl text-[#ffd700];
+      @apply text-2xl text-[#ffd700] mx-1;
     }
   }
-    .export-controls {
-      @apply flex flex-col items-center gap-4;
-  
-      .device-selector {
-        @apply flex bg-white rounded-xl p-1 shadow-sm border border-gray-100;
-  
-        .device-btn {
-          @apply px-3 py-1.5 rounded-lg text-sm font-medium transition-all;
-          color: #64748b;
-  
-          &:hover {
-            @apply bg-gray-50;
-          }
-  
-          &.active {
-            @apply bg-[#667eea] text-white shadow-md;
-          }
+
+  .export-controls {
+    @apply flex flex-row items-center justify-center gap-4;
+
+    .device-selector {
+      @apply flex bg-white/10 p-1 rounded-2xl border border-white/20 backdrop-blur-xl shadow-inner;
+
+      .device-btn {
+        @apply px-5 py-2 rounded-xl text-sm font-bold transition-all text-white/60;
+
+        &:hover {
+          @apply bg-white/5 text-white;
+        }
+
+        &.active {
+          @apply bg-white text-[#667eea] shadow-lg scale-105;
         }
       }
-        .export-btn {
-      @apply px-8 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl font-bold shadow-lg transition-all;
-        @apply flex items-center gap-2;
+    }
+
+    .export-btn {
+      @apply px-8 py-2.5 bg-white text-[#667eea] rounded-2xl font-black shadow-xl transition-all border-2 border-white;
+      @apply flex items-center gap-2;
 
       &:hover:not(:disabled) {
-        @apply transform -translate-y-0.5 shadow-xl brightness-110;
-        }
+        @apply transform -translate-y-1 shadow-2xl bg-gray-50;
+      }
 
-            &:active:not(:disabled) {
+      &:active:not(:disabled) {
         @apply scale-95 shadow-md;
-        }
+      }
 
-            &:disabled {
-        @apply opacity-50 cursor-not-allowed saturate-0;
-        }
-        }
-        }
+      &:disabled {
+        @apply opacity-40 cursor-not-allowed saturate-0;
+      }
+    }
+  }
 }
 
 .content-container {
