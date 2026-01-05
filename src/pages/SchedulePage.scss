@@ -119,12 +119,65 @@
   }
 
   &.has-permit {
-    @apply text-white font-semibold;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    @apply text-[#667eea] font-semibold;
+      background: none !important;
+      position: relative;
+      z-index: 1;
+    
+      &::before {
+        content: '';
+        position: absolute;
+        top: 4px;
+        bottom: 4px;
+        left: 0;
+        right: 0;
+        background-color: #eef2ff;
+        border-top: 1px solid #c7d2fe;
+        border-bottom: 1px solid #c7d2fe;
+        z-index: -1;
+        transition: all 0.2s;
+      }
+    
+      &.is-start::before {
+        border-top-left-radius: 8px;
+        border-bottom-left-radius: 8px;
+        border-left: 1px solid #c7d2fe;
+        left: 4px;
+      }
+    
+      &.is-end::before {
+        border-top-right-radius: 8px;
+        border-bottom-right-radius: 8px;
+        border-right: 1px solid #c7d2fe;
+        right: 4px;
+      }
+    
+      &.is-single::before,
+      &.is-final::before {
+        @apply rounded-lg;
+        border-left: 1px solid #c7d2fe;
+        border-right: 1px solid #c7d2fe;
+        left: 4px;
+        right: 4px;
+      }
+    
+      &.is-final::before {
+        border: 2px solid #ff4757 !important;
+        border-left: none !important;
+        border-top-left-radius: 0 !important;
+        border-bottom-left-radius: 0 !important;
+        background-color: #fff5f5;
+      }
 
+                                &.is-final {
+                                  @apply text-[#ff4757] font-bold;
+                                }
     &:enabled:hover {
-      @apply scale-110;
-      background: linear-gradient(135deg, #5568d3 0%, #65408b 100%);
+      @apply scale-105;
+      
+        &::before {
+          background-color: #e0e7ff;
+        }
     }
   }
 .holiday-text {
@@ -148,9 +201,6 @@
   @apply font-semibold text-[#667eea] uppercase text-sm;
 }
 
-.permit-marker {
-  @apply absolute bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-[#ffd700] rounded-full;
-}
 
 .calendar-legend {
   @apply mt-6 pt-6 border-t border-gray-200;
@@ -164,7 +214,7 @@
   @apply w-6 h-6 rounded-md inline-block;
 
   &.has-permit {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    @apply bg-[#eef2ff] border border-[#c7d2fe];
   }
 }
 

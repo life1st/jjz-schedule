@@ -92,7 +92,7 @@ export const ExportCalendar = ({ permits, year, id = 'export-calendar' }: Export
             </h3>
             <Calendar
               activeStartDate={monthDate}
-              tileContent={(args) => renderTileContent(args.date, permits)}
+              tileContent={(args) => renderTileContent(args.date)}
               tileClassName={(args) => getTileClassName(args.date, permits)}
               locale="zh-CN"
               showNavigation={false}

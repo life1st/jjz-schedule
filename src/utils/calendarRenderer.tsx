@@ -14,7 +14,7 @@ export const isDateInPermit = (date: Date, permits: Permit[]): boolean => {
 }
 
 // Custom tile content to highlight permit dates
-export const renderTileContent = (date: Date, permits: Permit[]) => {
+export const renderTileContent = (date: Date) => {
   const content = []
 
   const solar = Solar.fromDate(date)
@@ -58,17 +58,40 @@ export const renderTileContent = (date: Date, permits: Permit[]) => {
     )
   }
 
-  if (isDateInPermit(date, permits)) {
-    content.push(<div key="marker" className="permit-marker"></div>)
-  }
-  
   return <div className="tile-content">{content}</div>
 }
 
 // Custom tile class name
 export const getTileClassName = (date: Date, permits: Permit[]) => {
-  if (isDateInPermit(date, permits)) {
-    return 'has-permit'
+  if (!isDateInPermit(date, permits)) return ''
+
+  const classes = ['has-permit']
+  const mDate = dayjs(date)
+  
+  const prevDay = mDate.subtract(1, 'day').toDate()
+  const nextDay = mDate.add(1, 'day').toDate()
+
+  const hasPrev = isDateInPermit(prevDay, permits)
+  const hasNext = isDateInPermit(nextDay, permits)
+
+  if (hasPrev && hasNext) {
+    classes.push('is-middle')
+  } else if (hasPrev) {
+    classes.push('is-end')
+  } else if (hasNext) {
+    classes.push('is-start')
+  } else {
+    classes.push('is-single')
   }
-  return ''
+
+  // Detect the ultimate last date across all permits
+  if (permits.length > 0) {
+    const sortedByEnd = [...permits].sort((a, b) => b.endDate.getTime() - a.endDate.getTime())
+    const lastDate = dayjs(sortedByEnd[0].endDate).startOf('day')
+    if (mDate.startOf('day').isSame(lastDate)) {
+      classes.push('is-final')
+    }
+  }
+
+  return classes.join(' ')
 }

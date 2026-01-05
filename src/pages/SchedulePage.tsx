@@ -185,7 +185,7 @@ function SchedulePage() {
           disabled={permitsInViewYear.length < MAX_PERMITS}
           title={permitsInViewYear.length < MAX_PERMITS ? `需安排满${MAX_PERMITS}次${currentYear}年的排期` : "导出为图片"}
         >
-          {permitsInViewYear.length < MAX_PERMITS ? `还需安排 ${MAX_PERMITS - permitsInViewYear.length} 次 (${currentYear}年)` : '📸 导出排期图片'}
+          {permitsInViewYear.length < MAX_PERMITS ? `还可安排 ${MAX_PERMITS - permitsInViewYear.length} 次 (${currentYear}年)` : '📸 导出排期图片'}
         </button>
       </header>
 
@@ -219,7 +219,7 @@ function SchedulePage() {
                   <Calendar
                     activeStartDate={currentDate.toDate()}
                     onClickDay={handleDateClick}
-                    tileContent={(args) => renderTileContent(args.date, permits)}
+                    tileContent={(args) => renderTileContent(args.date)}
                     tileClassName={(args) => getTileClassName(args.date, permits)}
                     locale="zh-CN"
                     showNavigation={false}
