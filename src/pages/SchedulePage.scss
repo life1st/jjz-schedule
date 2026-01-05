@@ -97,6 +97,13 @@
       background: linear-gradient(135deg, #5568d3 0%, #65408b 100%);
     }
   }
+.holiday-text {
+  @apply text-[10px] text-red-500 font-bold mt-1 absolute bottom-1 right-1;
+}
+
+.workday-text {
+  @apply text-[10px] text-gray-500 font-normal mt-1 absolute bottom-1 right-1;
+}
 }
 
 .react-calendar__navigation button {
@@ -190,5 +197,11 @@
 
   &:active {
     @apply scale-95;
+  }
+}
+
+.react-calendar__tile {
+  .lunar-text {
+    @apply text-[10px] text-gray-400 absolute top-1 left-1 leading-none;
   }
 }

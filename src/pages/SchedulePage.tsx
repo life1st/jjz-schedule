@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import Calendar from 'react-calendar'
 import dayjs from 'dayjs'
+// @ts-ignore
+import { Solar, HolidayUtil } from 'lunar-javascript'
 import { Permit } from '../types/permit'
 import 'react-calendar/dist/Calendar.css'
 import './SchedulePage.scss'
@@ -106,10 +108,54 @@ function SchedulePage() {
 
   // Custom tile content to highlight permit dates
   const tileContent = ({ date }: { date: Date }) => {
-    if (isDateInPermit(date)) {
-      return <div className="permit-marker"></div>
+    const content = []
+
+    const solar = Solar.fromDate(date)
+    const lunar = solar.getLunar()
+    
+    // Lunar Info
+    const festivals = lunar.getFestivals()
+    const lunarText = festivals.length > 0 ? festivals[0] : lunar.getDayInChinese()
+
+    // Solar/Government Holiday Info
+    const dateStr = dayjs(date).format('YYYY-MM-DD')
+    const holidayData = HolidayUtil.getHoliday(dateStr)
+
+    // Identify if holiday is a Lunar holiday
+    const isLunarHoliday = holidayData && ['春节', '清明节', '端午节', '中秋节'].includes(holidayData.getName())
+
+    let shouldShowLunar = false
+    
+    if (holidayData) {
+       // Only show Lunar if it is a Lunar Festival (vacation or markup workday)
+       shouldShowLunar = !!isLunarHoliday
     }
-    return null
+
+    if (holidayData && !holidayData.isWork()) {
+      content.push(
+        <div key="holiday" className="holiday-text">
+          {holidayData.getName()}
+        </div>
+      )
+    } else if (holidayData && holidayData.isWork()) {
+      content.push(
+        <div key="work" className="workday-text">班</div>
+      )
+    }
+
+    if (shouldShowLunar) {
+      content.push(
+        <div key="lunar" className="lunar-text">
+          {lunarText}
+        </div>
+      )
+    }
+
+    if (isDateInPermit(date)) {
+      content.push(<div key="marker" className="permit-marker"></div>)
+    }
+    
+    return <div className="tile-content">{content}</div>
   }
 
   // Custom tile class name
