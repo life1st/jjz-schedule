@@ -10,7 +10,6 @@ import './SchedulePage.scss'
 import { toPng } from 'html-to-image'
 
 const STORAGE_KEY = 'jjz-schedule-permits'
-const MAX_PERMITS = 12
 const PERMIT_DURATION_DAYS = 7
 
 function SchedulePage() {
@@ -108,12 +107,10 @@ function SchedulePage() {
   }
 
   const [viewDate, setViewDate] = useState(new Date())
+  const [isExporting, setIsExporting] = useState(false)
 
   // Year Selection
   const currentYear = viewDate.getFullYear()
-
-  // Permits in the currently viewed year (for display/validation)
-  const permitsInViewYear = permits.filter(p => dayjs(p.startDate).year() === currentYear)
 
   // Navigation handlers
   const handlePrevMonth = () => {
@@ -136,10 +133,18 @@ function SchedulePage() {
   }
 
   const handleExportImage = async () => {
-    if (permitsInViewYear.length < MAX_PERMITS) return
+    // If not exporting, start the process
+    setIsExporting(true)
+    
+    // Give React time to mount the component
+    // We use a small delay to ensure rendering is complete
+    await new Promise(resolve => setTimeout(resolve, 300))
 
     const element = document.getElementById('export-calendar')
-    if (!element) return
+    if (!element) {
+      setIsExporting(false)
+      return
+    }
 
     const config = DEVICE_CONFIGS[exportDevice]
 
@@ -151,7 +156,8 @@ function SchedulePage() {
         style: {
           opacity: '1',
           zIndex: 'auto',
-          visibility: 'visible'
+          visibility: 'visible',
+          pointerEvents: 'auto'
         }
       })
 
@@ -162,12 +168,14 @@ function SchedulePage() {
     } catch (error) {
       console.error('Export failed:', error)
       alert('图片导出失败，请重试')
+    } finally {
+      setIsExporting(false)
     }
   }
 
   return (
     <div className="schedule-page">
-      <ExportCalendar permits={permits} year={currentYear} device={exportDevice} />
+      {isExporting && <ExportCalendar permits={permits} year={currentYear} device={exportDevice} />}
       
       <header className="page-header">
         <h1>进京证排期工具</h1>

@@ -57,48 +57,24 @@ export const ExportCalendar = ({ permits, year, device, id = 'export-calendar' }
       id={id}
       className={`export-calendar-container device-${device}`}
       style={{
-        position: 'absolute',
-        left: 0,
-        top: 0,
-        zIndex: -9999,
-        opacity: 0,
-        pointerEvents: 'none',
         width: `${config.width}px`,
         height: config.height ? `${config.height}px` : 'auto',
         minHeight: config.height ? `${config.height}px` : 'auto',
         padding: config.padding,
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        color: 'white',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: device !== 'auto' ? 'center' : 'flex-start',
-        overflow: 'hidden',
-        boxSizing: 'border-box'
-      }}
+        '--export-scale': config.scale
+      } as React.CSSProperties}
     >
-      <div style={{ textAlign: 'center', marginBottom: `${50 * config.scale}px` }}>
-        <h1 style={{ fontSize: `${56 * config.scale}px`, fontWeight: 'bold', marginBottom: `${16 * config.scale}px`, textShadow: `0 ${4 * config.scale}px ${12 * config.scale}px rgba(0,0,0,0.2)` }}>
-          {year}年 进京证排期全览
-        </h1>
-        <p style={{ fontSize: `${24 * config.scale}px`, opacity: 0.9 }}>
+      <div className="export-header">
+        <h1>{year}年 进京证排期全览</h1>
+        <p>
           {year}年共安排 <strong>{yearStartsCount}</strong> / {MAX_PERMITS} 次进京证
         </p>
       </div>
 
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: `repeat(${config.cols}, 1fr)`, 
-        gap: `${24 * config.scale}px`,
-        background: 'rgba(255, 255, 255, 0.95)',
-        padding: `${32 * config.scale}px`,
-        borderRadius: `${24 * config.scale}px`,
-        boxShadow: `0 ${20 * config.scale}px ${60 * config.scale}px rgba(0, 0, 0, 0.3)`,
-        margin: '0 auto',
-        width: 'fit-content'
-      }}>
+      <div className="export-grid" style={{ gridTemplateColumns: `repeat(${config.cols}, 1fr)` }}>
         {months.map((monthDate, index) => (
-          <div key={index} className="single-calendar-wrapper" style={{ zoom: config.scale }}>
-            <h3 className="calendar-month-title" style={{ textAlign: 'center', color: '#1a237e', marginBottom: `${16}px`, fontWeight: 'bold', fontSize: `${18}px` }}>
+          <div key={index} className="single-calendar-wrapper export-item">
+            <h3 className="calendar-month-title">
               {dayjs(monthDate).format('YYYY年 M月')}
             </h3>
             <Calendar
@@ -114,7 +90,7 @@ export const ExportCalendar = ({ permits, year, device, id = 'export-calendar' }
         ))}
       </div>
 
-      <div style={{ marginTop: `${60 * config.scale}px`, textAlign: 'center', fontSize: `${20 * config.scale}px`, opacity: 0.7 }}>
+      <div className="export-footer">
         生成于：{dayjs().format('YYYY-MM-DD HH:mm:ss')} | 4K 高清壁纸
       </div>
     </div>
