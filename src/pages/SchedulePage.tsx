@@ -333,9 +333,23 @@ function SchedulePage() {
                             return (
                               <div key={`${year}-${groupIndex}`} className={`permit-group ${!hasRegular ? 'temp-group' : ''}`}>
                                 <h3 className="group-title">
-                                  <span className="title-text">第 </span>
-                                  <strong>{groupIndex + 1}</strong>
-                                  <span className="title-text"> 轮排期计划</span>
+                                  <div className="title-left">
+                                    <span className="title-text">第 </span>
+                                    <strong>{groupIndex + 1}</strong>
+                                    <span className="title-text"> 轮排期计划</span>
+                                  </div>
+                                  <button
+                                    className="group-remove-btn"
+                                    onClick={() => {
+                                      if (window.confirm(`确定要删除第 ${groupIndex + 1} 轮的所有排期吗？`)) {
+                                        const groupIds = group.map(p => p.id);
+                                        updatePermits(permits.filter(p => !groupIds.includes(p.id)));
+                                      }
+                                    }}
+                                    title="删除本轮所有日期"
+                                  >
+                                    删除本轮
+                                  </button>
                                 </h3>
                                 <ul className="group-items">
                                   {group.map((permit) => {
