@@ -111,6 +111,7 @@ function SchedulePage() {
 
   // Year Selection
   const currentYear = viewDate.getFullYear()
+  const permitsInCurrentYear = permits.filter(p => dayjs(p.startDate).year() === currentYear)
 
   // Navigation handlers
   const handlePrevMonth = () => {
@@ -180,8 +181,8 @@ function SchedulePage() {
       <header className="page-header">
         <h1>进京证排期工具</h1>
         <p className="subtitle">
-          当前已排期 <strong>{permits.length}</strong> 次进京证
-          {permits.length > 0 && <span style={{ marginLeft: '1rem', opacity: 0.8 }}>(共 {Math.ceil(permits.length / 12)} 组)</span>}
+          {currentYear}年已排期 <strong>{permitsInCurrentYear.length}</strong> 次进京证
+          {permitsInCurrentYear.length > 0 && <span style={{ marginLeft: '1rem', opacity: 0.8 }}>(共 {Math.ceil(permitsInCurrentYear.length / 12)} 组)</span>}
         </p>
         <div className="export-controls">
           <div className="device-selector">
