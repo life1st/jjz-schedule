@@ -84,11 +84,22 @@ export const getTileClassName = (date: Date, permits: Permit[]) => {
     classes.push('is-single')
   }
 
-  // Detect the ultimate last date across all permits
+  // Detect the "group finish" dates (12th, 24th, etc. permits WITHIN THE SAME YEAR)
   if (permits.length > 0) {
-    const sortedByEnd = [...permits].sort((a, b) => b.endDate.getTime() - a.endDate.getTime())
-    const lastDate = dayjs(sortedByEnd[0].endDate).startOf('day')
-    if (mDate.startOf('day').isSame(lastDate)) {
+    const sortedAll = [...permits].sort((a, b) => a.startDate.getTime() - b.startDate.getTime())
+    const curDate = mDate.startOf('day')
+    const curYear = mDate.year()
+
+    // Filter permits that START in the same year as the current date being rendered
+    const yearPermits = sortedAll.filter(p => dayjs(p.startDate).year() === curYear)
+
+    // Check if this date is the endDate of the 12th, 24th... permit of THIS year
+    const isGroupEnd = yearPermits.some((p, index) => {
+      const isMultipleOf12 = (index + 1) % 12 === 0
+      return isMultipleOf12 && curDate.isSame(dayjs(p.endDate).startOf('day'))
+    })
+
+    if (isGroupEnd) {
       classes.push('is-final')
     }
   }

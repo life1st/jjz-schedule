@@ -84,15 +84,6 @@ function SchedulePage() {
       (p) => !conflictingPermits.some((cp) => cp.id === p.id)
     )
 
-    // Check if we've reached the maximum number of permits for the TARGET year
-    const targetYear = newStartDate.year()
-    const permitsInTargetYear = permitsAfterRemoval.filter(p => dayjs(p.startDate).year() === targetYear)
-
-    if (permitsInTargetYear.length >= MAX_PERMITS) {
-      alert(`${targetYear}年 最多只能添加 ${MAX_PERMITS} 次进京证`)
-      return
-    }
-
     // Add new permit
     const newPermit: Permit = {
       id: Date.now().toString(),
@@ -181,7 +172,8 @@ function SchedulePage() {
       <header className="page-header">
         <h1>进京证排期工具</h1>
         <p className="subtitle">
-          {currentYear}年已安排 <strong>{permitsInViewYear.length}</strong> / {MAX_PERMITS} 次
+          当前已排期 <strong>{permits.length}</strong> 次进京证
+          {permits.length > 0 && <span style={{ marginLeft: '1rem', opacity: 0.8 }}>(共 {Math.ceil(permits.length / 12)} 组)</span>}
         </p>
         <div className="export-controls">
           <div className="device-selector">
@@ -198,10 +190,9 @@ function SchedulePage() {
           <button
             className="export-btn"
             onClick={handleExportImage}
-            disabled={permitsInViewYear.length < MAX_PERMITS}
-            title={permitsInViewYear.length < MAX_PERMITS ? `需安排满${MAX_PERMITS}次${currentYear}年的排期` : "导出为图片"}
+            title="导出为图片"
           >
-            {permitsInViewYear.length < MAX_PERMITS ? `还差 ${MAX_PERMITS - permitsInViewYear.length} 次` : '📸 导出'}
+            📸 导出
           </button>
         </div>
       </header>
@@ -273,27 +264,53 @@ function SchedulePage() {
           {permits.length === 0 ? (
             <p className="empty-message">暂无已选日期，点击日历上的日期开始添加</p>
           ) : (
-            <ul className="permits-list">
-              {permits.map((permit, index) => (
-                <li key={permit.id} className="permit-item">
-                  <div className="permit-info">
-                    <span className="permit-number">#{index + 1}</span>
-                    <span className="permit-dates">
-                      {dayjs(permit.startDate).format('YYYY-MM-DD')} 至{' '}
-                      {dayjs(permit.endDate).format('YYYY-MM-DD')}
-                    </span>
-                    <span className="permit-duration">（{PERMIT_DURATION_DAYS} 天）</span>
+              <div className="permits-list">
+                {Object.entries(
+                  permits.reduce((acc, p) => {
+                    const year = dayjs(p.startDate).year();
+                    if (!acc[year]) acc[year] = [];
+                    acc[year].push(p);
+                    return acc;
+                  }, {} as Record<number, Permit[]>)
+                )
+                  .sort(([yearA], [yearB]) => Number(yearB) - Number(yearA)) // Sort years descending
+                  .map(([year, yearPermits]) => (
+                    <div key={year} className="year-group">
+                      <h2 className="year-title">{year} 年排期计划</h2>
+                      {Array.from({ length: Math.ceil(yearPermits.length / 12) }).map((_, groupIndex) => (
+                        <div key={groupIndex} className="permit-group">
+                          <h3 className="group-title">
+                            {year}年 第 {groupIndex + 1} 轮平移 (周期间隔)
+                          </h3>
+                          <ul className="group-items">
+                            {yearPermits.slice(groupIndex * 12, (groupIndex + 1) * 12).map((permit, index) => {
+                              const globalIndex = groupIndex * 12 + index;
+                              return (
+                                <li key={permit.id} className="permit-item">
+                                  <div className="permit-info">
+                              <span className="permit-number">#{globalIndex + 1}</span>
+                              <span className="permit-dates">
+                                {dayjs(permit.startDate).format('YYYY-MM-DD')} 至{' '}
+                                {dayjs(permit.endDate).format('YYYY-MM-DD')}
+                              </span>
+                              <span className="permit-duration">（{PERMIT_DURATION_DAYS} 天）</span>
+                            </div>
+                            <button
+                              className="remove-button"
+                              onClick={() => removePermit(permit.id)}
+                              aria-label="删除此进京证"
+                            >
+                              ✕
+                            </button>
+                          </li>
+                        );
+                      })}
+                    </ul>
                   </div>
-                  <button
-                    className="remove-button"
-                    onClick={() => removePermit(permit.id)}
-                    aria-label="删除此进京证"
-                  >
-                    ✕
-                  </button>
-                </li>
-              ))}
-            </ul>
+                ))}
+              </div>
+            ))}
+              </div>
           )}
         </div>
       </div>
