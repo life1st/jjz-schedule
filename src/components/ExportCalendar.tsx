@@ -70,9 +70,7 @@ export const ExportCalendar = ({ permits, year, device, id = 'export-calendar' }
         <div className="header-content">
           <div className="header-info">
             <h1>{year}年 进京证排期全览</h1>
-            <p>
-              {year}年共安排 <strong>{yearStartsCount}</strong> / {MAX_PERMITS} 次进京证
-            </p>
+            <p>共安排 <strong>{yearStartsCount}</strong> 次进京证</p>
           </div>
           <div className="header-qr">
             <QRCodeSVG
