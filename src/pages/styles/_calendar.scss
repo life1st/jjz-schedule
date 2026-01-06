@@ -88,6 +88,34 @@
 .single-calendar-wrapper {
   display: flex;
   flex-direction: column;
+  position: relative;
+  
+    // Add vertical divider between months, centered in the gap
+    &:not(:first-child)::before {
+      content: '';
+      position: absolute;
+      left: -0.75rem; // Half of the 1.5rem gap
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background-color: rgba(102, 126, 234, 0.1);
+    }
+  
+    // Handle mobile layout (one column)
+    @media (max-width: 767px) {
+      &:not(:first-child) {
+        padding-top: 1.5rem;
+  
+        &::before {
+          left: 0;
+          right: 0;
+          top: 0;
+          bottom: auto;
+          width: auto;
+          height: 1px;
+        }
+      }
+    }
 
   .calendar-month-title {
     text-align: center;
@@ -229,6 +257,19 @@
   color: $primary-blue;
   text-transform: uppercase;
   font-size: 0.875rem;
+abbr {
+    text-decoration: none;
+    border-bottom: none;
+    cursor: default;
+  }
+
+  &__weekday--weekend {
+    color: $danger-red;
+
+    abbr {
+      color: $danger-red;
+    }
+  }
 }
 
 .calendar-legend {

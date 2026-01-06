@@ -81,6 +81,18 @@
 
     .export-item {
       zoom: var(--export-scale, 1);
+      position: relative;
+      
+        // Centered divider for export grid
+        &:not(:first-child)::before {
+          content: '';
+          position: absolute;
+          left: calc(-12px); // Half of the 24px gap
+          top: 0;
+          bottom: 0;
+          width: 1px;
+          background-color: rgba(102, 126, 234, 0.1);
+        }
 
       .calendar-month-title {
         color: $text-dark;

@@ -236,6 +236,7 @@ function SchedulePage() {
                   <Calendar
                     activeStartDate={currentDate.toDate()}
                     onClickDay={handleDateClick}
+                    calendarType="gregory"
                     tileContent={(args) => renderTileContent(args.date)}
                     tileClassName={(args) => getTileClassName(args.date, permits)}
                     locale="zh-CN"
