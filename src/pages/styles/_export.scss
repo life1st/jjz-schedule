@@ -45,13 +45,18 @@
           margin-top: 0;
         }
 
-        p {
+                .summary-info,
+                p {
           font-size: calc(24px * var(--export-scale, 1));
           opacity: 0.9;
           margin: 0;
 
+          .subtitle {
+              margin: 0;
+            }
           strong {
             color: $accent-gold;
+            font-size: calc(32px * var(--export-scale, 1));
           }
         }
       }

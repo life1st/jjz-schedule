@@ -3,6 +3,7 @@ import dayjs from 'dayjs'
 import { Permit } from '../types/permit'
 import { renderTileContent, getTileClassName } from '../utils/calendarRenderer'
 import { CalendarLegend } from './CalendarLegend'
+import { SummaryInfo } from './SummaryInfo'
 import 'react-calendar/dist/Calendar.css'
 import { QRCodeSVG } from 'qrcode.react'
 
@@ -23,7 +24,7 @@ export const ExportCalendar = ({ permits, year, device, id = 'export-calendar' }
   // Filter permits that START in this year for the quota display
   const regularStarts = permits.filter(p => (!p.type || p.type === 'regular') && dayjs(p.startDate).year() === year)
   const regularCount = regularStarts.length
-  const translationCount = Math.floor(regularCount / 12)
+  const shiftCount = Math.floor(Math.max((regularCount - 1) / 12, 0))
 
   // Calculate range limited to the specific year
   const sortedPermits = [...permits].sort((a, b) => a.startDate.getTime() - b.startDate.getTime())
@@ -71,9 +72,11 @@ export const ExportCalendar = ({ permits, year, device, id = 'export-calendar' }
         <div className="header-content">
           <div className="header-info">
             <h1>{year}年 进京证排期全览</h1>
-            <p>
-              进京证: <strong>{regularCount}</strong> 次 (平移 <strong>{translationCount}</strong> 次)
-            </p>
+            <SummaryInfo
+              year={year}
+              regularCount={regularCount}
+              shiftCount={shiftCount}
+            />
           </div>
           <div className="header-qr">
             <QRCodeSVG

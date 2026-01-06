@@ -3,6 +3,7 @@ import Calendar from 'react-calendar'
 import dayjs from 'dayjs'
 import { Permit } from '../types/permit'
 import { CalendarLegend } from '../components/CalendarLegend'
+import { SummaryInfo } from '../components/SummaryInfo'
 import { renderTileContent, getTileClassName } from '../utils/calendarRenderer'
 import { ExportCalendar } from '../components/ExportCalendar'
 import { ExportDevice, DEVICE_CONFIGS } from '../constants/export'
@@ -123,9 +124,10 @@ function SchedulePage() {
   // Year Selection
   const currentYear = viewDate.getFullYear()
   const regularInYear = permits.filter(p => dayjs(p.startDate).year() === currentYear && (!p.type || p.type === 'regular'))
+  const shiftCount = Math.floor(Math.max((regularInYear.length - 1) / 12, 0))
 
   // Navigation handlers
-  const handlePrevMonth = () => {
+  const handlePrevMonth = () => { 
     setViewDate(dayjs(viewDate).subtract(1, 'month').toDate())
   }
 
@@ -191,12 +193,11 @@ function SchedulePage() {
       
       <header className="page-header">
         <h1>进京证排期工具</h1>
-        <div className="summary-info">
-          <p className="subtitle">
-            {currentYear}年已排期<strong> {regularInYear.length}</strong> 次进京证
-            {regularInYear.length > 0 && <span style={{ opacity: 0.8 }}> ( {Math.ceil(regularInYear.length / 12)} 次平移)</span>}
-          </p>
-        </div>
+        <SummaryInfo
+          year={currentYear}
+          regularCount={regularInYear.length}
+          shiftCount={shiftCount}
+        />
         <div className="export-controls">
           <div className="device-selector">
             {(['auto', 'desktop', 'ipad', 'iphone'] as ExportDevice[]).map(d => (
@@ -332,15 +333,9 @@ function SchedulePage() {
                             return (
                               <div key={`${year}-${groupIndex}`} className={`permit-group ${!hasRegular ? 'temp-group' : ''}`}>
                                 <h3 className="group-title">
-                                  {hasRegular ? (
-                                    <>
-                                      <span className="title-text">第 </span>
-                                      <strong>{groupIndex + 1}</strong>
-                                      <span className="title-text"> 轮排期 (进京证)</span>
-                                    </>
-                                  ) : (
-                                    <span className="title-text">临牌排期计划</span>
-                                  )}
+                                  <span className="title-text">第 </span>
+                                  <strong>{groupIndex + 1}</strong>
+                                  <span className="title-text"> 轮排期计划</span>
                                 </h3>
                                 <ul className="group-items">
                                   {group.map((permit) => {
@@ -351,7 +346,7 @@ function SchedulePage() {
                                       <li key={permit.id} className={`permit-item ${isTemp ? 'is-temp' : ''}`}>
                                         <div className="permit-info">
                                           <span className="permit-number">
-                                            {isTemp ? '临' : `#${globalRegularCounter}`}
+                                            {isTemp ? '临' : `#${globalRegularCounter - groupIndex * 12}`}
                                           </span>
                                           <span className="permit-dates">
                                             {dayjs(permit.startDate).format('MM-DD')} 至{' '}
