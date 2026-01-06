@@ -98,6 +98,10 @@ function SchedulePage() {
     }
 
     updatePermits([...permitsAfterRemoval, newPermit].sort((a, b) => a.startDate.getTime() - b.startDate.getTime()))
+
+    if (isTempMode) {
+      setIsTempMode(false)
+    }
   }
 
   // Remove a permit by ID
@@ -201,7 +205,7 @@ function SchedulePage() {
                 className={`device-btn ${exportDevice === d ? 'active' : ''}`}
                 onClick={() => setExportDevice(d)}
               >
-                {d === 'auto' ? '长图' : d.toUpperCase()}
+                {d === 'auto' ? '自适应' : d.toUpperCase()}
               </button>
             ))}
           </div>
@@ -293,8 +297,27 @@ function SchedulePage() {
                 )
                   .sort(([yearA], [yearB]) => Number(yearB) - Number(yearA)) // Sort years descending
                   .map(([year, yearPermits]) => {
-                    const regularPermits = yearPermits.filter(p => !p.type || p.type === 'regular');
-                    const tempPermits = yearPermits.filter(p => p.type === 'temporary');
+                    // Sort all permits in this year chronologically
+                    const sortedYearPermits = [...yearPermits].sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
+
+                    // Grouping logic: New group starts when we hit a regular permit AND already have 12
+                    const groups: Permit[][] = [];
+                    let currentGroup: Permit[] = [];
+                    let regularInCurrent = 0;
+
+                    sortedYearPermits.forEach(p => {
+                      const isRegular = !p.type || p.type === 'regular';
+                      if (isRegular && regularInCurrent === 12) {
+                        groups.push(currentGroup);
+                        currentGroup = [];
+                        regularInCurrent = 0;
+                      }
+                      currentGroup.push(p);
+                      if (isRegular) regularInCurrent++;
+                    });
+                    if (currentGroup.length > 0) groups.push(currentGroup);
+
+                    let globalRegularCounter = 0;
 
                     return (
                       <div key={year} className="year-group">
@@ -304,65 +327,51 @@ function SchedulePage() {
                         </h2>
                         
                         <div className="year-groups-container">
-                          {/* Regular Permits Groups */}
-                          {Array.from({ length: Math.ceil(regularPermits.length / 12) }).map((_, groupIndex) => (
-                            <div key={`regular-${groupIndex}`} className="permit-group">
-                              <h3 className="group-title">
-                                <span className="title-text">第 </span>
-                                <strong>{groupIndex + 1}</strong>
-                                <span className="title-text"> 轮排期 (进京证)</span>
-                              </h3>
-                              <ul className="group-items">
-                                {regularPermits.slice(groupIndex * 12, (groupIndex + 1) * 12).map((permit, index) => (
-                                  <li key={permit.id} className="permit-item">
-                                    <div className="permit-info">
-                                      <span className="permit-number">#{index + 1}</span>
-                                      <span className="permit-dates">
-                                        {dayjs(permit.startDate).format('MM-DD')} 至{' '}
-                                        {dayjs(permit.endDate).format('MM-DD')}
-                                      </span>
-                                    </div>
-                                    <button
-                                      className="remove-button"
-                                      onClick={() => removePermit(permit.id)}
-                                      aria-label="删除此次排期"
-                                    >
-                                      ✕
-                                    </button>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          ))}
+                          {groups.map((group, groupIndex) => {
+                            const hasRegular = group.some(p => !p.type || p.type === 'regular');
+                            return (
+                              <div key={`${year}-${groupIndex}`} className={`permit-group ${!hasRegular ? 'temp-group' : ''}`}>
+                                <h3 className="group-title">
+                                  {hasRegular ? (
+                                    <>
+                                      <span className="title-text">第 </span>
+                                      <strong>{groupIndex + 1}</strong>
+                                      <span className="title-text"> 轮排期 (进京证)</span>
+                                    </>
+                                  ) : (
+                                    <span className="title-text">临牌排期计划</span>
+                                  )}
+                                </h3>
+                                <ul className="group-items">
+                                  {group.map((permit) => {
+                                    const isTemp = permit.type === 'temporary';
+                                    if (!isTemp) globalRegularCounter++;
 
-                          {/* Temporary Permits Group */}
-                          {tempPermits.length > 0 && (
-                            <div className="permit-group temp-group">
-                              <h3 className="group-title">
-                                <span className="title-text">临牌排期计划</span>
-                              </h3>
-                              <ul className="group-items">
-                                {tempPermits.map((permit, index) => (
-                                  <li key={permit.id} className="permit-item is-temp">
-                                    <div className="permit-info">
-                                      <span className="permit-number">#{index + 1}</span>
-                                      <span className="permit-dates">
-                                        {dayjs(permit.startDate).format('MM-DD')} 至{' '}
-                                        {dayjs(permit.endDate).format('MM-DD')}
-                                      </span>
-                                    </div>
-                                    <button
-                                      className="remove-button"
-                                      onClick={() => removePermit(permit.id)}
-                                      aria-label="删除此次排期"
-                                    >
-                                      ✕
-                                    </button>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
+                                    return (
+                                      <li key={permit.id} className={`permit-item ${isTemp ? 'is-temp' : ''}`}>
+                                        <div className="permit-info">
+                                          <span className="permit-number">
+                                            {isTemp ? '临' : `#${globalRegularCounter}`}
+                                          </span>
+                                          <span className="permit-dates">
+                                            {dayjs(permit.startDate).format('MM-DD')} 至{' '}
+                                            {dayjs(permit.endDate).format('MM-DD')}
+                                          </span>
+                                        </div>
+                                        <button
+                                          className="remove-button"
+                                          onClick={() => removePermit(permit.id)}
+                                          aria-label="删除此次排期"
+                                        >
+                                          ✕
+                                        </button>
+                                      </li>
+                                    );
+                                  })}
+                                </ul>
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
                     );
