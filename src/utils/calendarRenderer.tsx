@@ -63,47 +63,62 @@ export const renderTileContent = (date: Date) => {
 
 // Custom tile class name
 export const getTileClassName = (date: Date, permits: Permit[]) => {
-  if (!isDateInPermit(date, permits)) return ''
-
-  const classes = ['has-permit']
-  const mDate = dayjs(date)
   const checkDate = dayjs(date).startOf('day')
-  const isStart = permits.some((p) => checkDate.isSame(dayjs(p.startDate).startOf('day')))
-  const isEnd = permits.some((p) => checkDate.isSame(dayjs(p.endDate).startOf('day')))
-  const isInMiddle = permits.some((p) => {
-    const start = dayjs(p.startDate).startOf('day')
-    const end = dayjs(p.endDate).startOf('day')
-    return checkDate.isAfter(start) && checkDate.isBefore(end)
-  })
+  const classes: string[] = []
 
-  if (isStart && isEnd) {
-    classes.push('is-single')
-  } else if (isStart) {
-    classes.push('is-start')
-  } else if (isEnd) {
-    classes.push('is-end')
-  } else if (isInMiddle) {
-    classes.push('is-middle')
-  }
+  const regularPermits = permits.filter(p => !p.type || p.type === 'regular')
+  const tempPermits = permits.filter(p => p.type === 'temporary')
 
-  // Detect the "group finish" dates (12th, 24th, etc. permits WITHIN THE SAME YEAR)
-  if (permits.length > 0) {
-    const sortedAll = [...permits].sort((a, b) => a.startDate.getTime() - b.startDate.getTime())
-    const curDate = mDate.startOf('day')
-    const curYear = mDate.year()
+  // Regular Permits Logic
+  if (isDateInPermit(date, regularPermits)) {
+    classes.push('has-permit')
+    const isStart = regularPermits.some((p) => checkDate.isSame(dayjs(p.startDate).startOf('day')))
+    const isEnd = regularPermits.some((p) => checkDate.isSame(dayjs(p.endDate).startOf('day')))
+    const isInMiddle = regularPermits.some((p) => {
+      const start = dayjs(p.startDate).startOf('day')
+      const end = dayjs(p.endDate).startOf('day')
+      return checkDate.isAfter(start) && checkDate.isBefore(end)
+    })
 
-    // Filter permits that START in the same year as the current date being rendered
-    const yearPermits = sortedAll.filter(p => dayjs(p.startDate).year() === curYear)
+    if (isStart && isEnd) {
+      classes.push('is-single')
+    } else if (isStart) {
+      classes.push('is-start')
+    } else if (isEnd) {
+      classes.push('is-end')
+    } else if (isInMiddle) {
+      classes.push('is-middle')
+    }
 
-    // Check if this date is the endDate of the 12th, 24th... permit of THIS year
+    // Detect the "group finish" dates for regular permits
+    const sortedRegular = [...regularPermits].sort((a, b) => a.startDate.getTime() - b.startDate.getTime())
+    const curYear = checkDate.year()
+    const yearPermits = sortedRegular.filter(p => dayjs(p.startDate).year() === curYear)
+
     const isGroupEnd = yearPermits.some((p, index) => {
       const isMultipleOf12 = (index + 1) % 12 === 0
-      return isMultipleOf12 && curDate.isSame(dayjs(p.endDate).startOf('day'))
+      return isMultipleOf12 && checkDate.isSame(dayjs(p.endDate).startOf('day'))
     })
 
     if (isGroupEnd) {
       classes.push('is-final')
     }
+  }
+
+  // Temporary Permits Logic
+  if (isDateInPermit(date, tempPermits)) {
+    classes.push('has-temp-permit')
+    const isStart = tempPermits.some((p) => checkDate.isSame(dayjs(p.startDate).startOf('day')))
+    const isEnd = tempPermits.some((p) => checkDate.isSame(dayjs(p.endDate).startOf('day')))
+    const isInMiddle = tempPermits.some((p) => {
+      const start = dayjs(p.startDate).startOf('day')
+      const end = dayjs(p.endDate).startOf('day')
+      return checkDate.isAfter(start) && checkDate.isBefore(end)
+    })
+
+    if (isStart) classes.push('is-temp-start')
+    if (isEnd) classes.push('is-temp-end')
+    if (isInMiddle) classes.push('is-temp-middle')
   }
 
   return classes.join(' ')

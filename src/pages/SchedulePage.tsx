@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Calendar from 'react-calendar'
 import dayjs from 'dayjs'
 import { Permit } from '../types/permit'
+import { CalendarLegend } from '../components/CalendarLegend'
 import { renderTileContent, getTileClassName } from '../utils/calendarRenderer'
 import { ExportCalendar } from '../components/ExportCalendar'
 import { ExportDevice, DEVICE_CONFIGS } from '../constants/export'
@@ -10,11 +11,10 @@ import './SchedulePage.scss'
 import { toPng } from 'html-to-image'
 
 const STORAGE_KEY = 'jjz-schedule-permits'
-const PERMIT_DURATION_DAYS = 7
-
 function SchedulePage() {
   const [permits, setPermits] = useState<Permit[]>([])
   const [exportDevice, setExportDevice] = useState<ExportDevice>('auto')
+  const [isTempMode, setIsTempMode] = useState(false)
 
   // Helper to update state and localStorage simultaneously
   const updatePermits = (newPermits: Permit[]) => {
@@ -32,6 +32,7 @@ function SchedulePage() {
           ...p,
           startDate: new Date(p.startDate),
           endDate: new Date(p.endDate),
+          type: p.type || 'regular', // Default to regular for legacy data
         }))
         setPermits(permitsWithDates)
       } catch (error) {
@@ -42,8 +43,12 @@ function SchedulePage() {
 
   // Handle date click
   const handleDateClick = (date: Date) => {
-    // Check if clicking on an existing permit to remove it
+    const currentType = isTempMode ? 'temporary' : 'regular'
+    const duration = isTempMode ? 15 : 7
+
+    // Check if clicking on an existing permit OF THE SAME TYPE to remove it
     const existingPermit = permits.find((permit) => {
+      if (permit.type !== currentType) return false
       const checkDate = dayjs(date).startOf('day')
       const start = dayjs(permit.startDate).startOf('day')
       const end = dayjs(permit.endDate).startOf('day')
@@ -58,10 +63,11 @@ function SchedulePage() {
 
     // Calculate new permit date range
     const newStartDate = dayjs(date).startOf('day')
-    const newEndDate = dayjs(date).add(PERMIT_DURATION_DAYS - 1, 'day').endOf('day')
+    const newEndDate = dayjs(date).add(duration - 1, 'day').endOf('day')
 
-    // Find all permits that would overlap with the new permit
+    // Find all permits OF THE SAME TYPE that would overlap with the new permit
     const conflictingPermits = permits.filter((permit) => {
+      if (permit.type !== currentType) return false
       const existingStart = dayjs(permit.startDate).startOf('day')
       const existingEnd = dayjs(permit.endDate).startOf('day')
       
@@ -88,6 +94,7 @@ function SchedulePage() {
       id: Date.now().toString(),
       startDate: newStartDate.toDate(),
       endDate: newEndDate.toDate(),
+      type: currentType,
     }
 
     updatePermits([...permitsAfterRemoval, newPermit].sort((a, b) => a.startDate.getTime() - b.startDate.getTime()))
@@ -111,7 +118,7 @@ function SchedulePage() {
 
   // Year Selection
   const currentYear = viewDate.getFullYear()
-  const permitsInCurrentYear = permits.filter(p => dayjs(p.startDate).year() === currentYear)
+  const regularInYear = permits.filter(p => dayjs(p.startDate).year() === currentYear && (!p.type || p.type === 'regular'))
 
   // Navigation handlers
   const handlePrevMonth = () => {
@@ -180,10 +187,12 @@ function SchedulePage() {
       
       <header className="page-header">
         <h1>进京证排期工具</h1>
-        <p className="subtitle">
-          {currentYear}年已排期 <strong>{permitsInCurrentYear.length}</strong> 次进京证
-          {permitsInCurrentYear.length > 0 && <span style={{ marginLeft: '1rem', opacity: 0.8 }}>(共 {Math.ceil(permitsInCurrentYear.length / 12)} 组)</span>}
-        </p>
+        <div className="summary-info">
+          <p className="subtitle">
+            {currentYear}年已排期<strong> {regularInYear.length}</strong> 次进京证
+            {regularInYear.length > 0 && <span style={{ opacity: 0.8 }}> ( {Math.ceil(regularInYear.length / 12)} 次平移)</span>}
+          </p>
+        </div>
         <div className="export-controls">
           <div className="device-selector">
             {(['auto', 'desktop', 'ipad', 'iphone'] as ExportDevice[]).map(d => (
@@ -249,12 +258,11 @@ function SchedulePage() {
             })}
           </div>
 
-          <div className="calendar-legend">
-            <div className="legend-item">
-              <span className="legend-marker has-permit"></span>
-              <span>已选日期（点击可删除，重叠日期自动合并）</span>
-            </div>
-          </div>
+          <CalendarLegend
+            isTempMode={isTempMode}
+            setIsTempMode={setIsTempMode}
+            showToggle={true}
+          />
         </div>
 
         <div className="permits-section">
@@ -284,23 +292,28 @@ function SchedulePage() {
                   }, {} as Record<number, Permit[]>)
                 )
                   .sort(([yearA], [yearB]) => Number(yearB) - Number(yearA)) // Sort years descending
-                  .map(([year, yearPermits]) => (
-                    <div key={year} className="year-group">
-                      <h2 className="year-title">
-                        <strong>{year}</strong>
-                        <span className="title-text"> 年排期计划</span>
-                      </h2>
-                      <div className="year-groups-container">
-                        {Array.from({ length: Math.ceil(yearPermits.length / 12) }).map((_, groupIndex) => (
-                          <div key={groupIndex} className="permit-group">
-                            <h3 className="group-title">
-                              <span className="title-text">第 </span>
-                              <strong>{groupIndex + 1}</strong>
-                              <span className="title-text"> 轮排期</span>
-                            </h3>
-                            <ul className="group-items">
-                              {yearPermits.slice(groupIndex * 12, (groupIndex + 1) * 12).map((permit, index) => {
-                                return (
+                  .map(([year, yearPermits]) => {
+                    const regularPermits = yearPermits.filter(p => !p.type || p.type === 'regular');
+                    const tempPermits = yearPermits.filter(p => p.type === 'temporary');
+
+                    return (
+                      <div key={year} className="year-group">
+                        <h2 className="year-title">
+                          <strong>{year}</strong>
+                          <span className="title-text"> 年排期计划</span>
+                        </h2>
+                        
+                        <div className="year-groups-container">
+                          {/* Regular Permits Groups */}
+                          {Array.from({ length: Math.ceil(regularPermits.length / 12) }).map((_, groupIndex) => (
+                            <div key={`regular-${groupIndex}`} className="permit-group">
+                              <h3 className="group-title">
+                                <span className="title-text">第 </span>
+                                <strong>{groupIndex + 1}</strong>
+                                <span className="title-text"> 轮排期 (进京证)</span>
+                              </h3>
+                              <ul className="group-items">
+                                {regularPermits.slice(groupIndex * 12, (groupIndex + 1) * 12).map((permit, index) => (
                                   <li key={permit.id} className="permit-item">
                                     <div className="permit-info">
                                       <span className="permit-number">#{index + 1}</span>
@@ -317,14 +330,43 @@ function SchedulePage() {
                                       ✕
                                     </button>
                                   </li>
-                                );
-                              })}
-                            </ul>
-                          </div>
-                        ))}
+                                ))}
+                              </ul>
+                            </div>
+                          ))}
+
+                          {/* Temporary Permits Group */}
+                          {tempPermits.length > 0 && (
+                            <div className="permit-group temp-group">
+                              <h3 className="group-title">
+                                <span className="title-text">临牌排期计划</span>
+                              </h3>
+                              <ul className="group-items">
+                                {tempPermits.map((permit, index) => (
+                                  <li key={permit.id} className="permit-item is-temp">
+                                    <div className="permit-info">
+                                      <span className="permit-number">#{index + 1}</span>
+                                      <span className="permit-dates">
+                                        {dayjs(permit.startDate).format('MM-DD')} 至{' '}
+                                        {dayjs(permit.endDate).format('MM-DD')}
+                                      </span>
+                                    </div>
+                                    <button
+                                      className="remove-button"
+                                      onClick={() => removePermit(permit.id)}
+                                      aria-label="删除此次排期"
+                                    >
+                                      ✕
+                                    </button>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
               </div>
           )}
         </div>

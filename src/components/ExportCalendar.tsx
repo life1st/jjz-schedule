@@ -2,6 +2,7 @@ import Calendar from 'react-calendar'
 import dayjs from 'dayjs'
 import { Permit } from '../types/permit'
 import { renderTileContent, getTileClassName } from '../utils/calendarRenderer'
+import { CalendarLegend } from './CalendarLegend'
 import 'react-calendar/dist/Calendar.css'
 import { QRCodeSVG } from 'qrcode.react'
 
@@ -20,8 +21,9 @@ export const ExportCalendar = ({ permits, year, device, id = 'export-calendar' }
   const config = DEVICE_CONFIGS[device]
 
   // Filter permits that START in this year for the quota display
-  const yearStartsCount = permits.filter(p => dayjs(p.startDate).year() === year).length
-  const translationCount = Math.floor(yearStartsCount / 12)
+  const regularStarts = permits.filter(p => (!p.type || p.type === 'regular') && dayjs(p.startDate).year() === year)
+  const regularCount = regularStarts.length
+  const translationCount = Math.floor(regularCount / 12)
 
   // Calculate range limited to the specific year
   const sortedPermits = [...permits].sort((a, b) => a.startDate.getTime() - b.startDate.getTime())
@@ -69,7 +71,9 @@ export const ExportCalendar = ({ permits, year, device, id = 'export-calendar' }
         <div className="header-content">
           <div className="header-info">
             <h1>{year}年 进京证排期全览</h1>
-            <p>共安排 <strong>{yearStartsCount}</strong> 次进京证，需平移 <strong>{translationCount}</strong> 次</p>
+            <p>
+              进京证: <strong>{regularCount}</strong> 次 (平移 <strong>{translationCount}</strong> 次)
+            </p>
           </div>
           <div className="header-qr">
             <QRCodeSVG
@@ -81,10 +85,13 @@ export const ExportCalendar = ({ permits, year, device, id = 'export-calendar' }
             />
           </div>
         </div>
+
       </div>
 
-      <div className="export-grid" style={{ gridTemplateColumns: `repeat(${config.cols}, 1fr)` }}>
-        {months.map((monthDate, index) => (
+      <div className="export-grid-wrapper">
+        <CalendarLegend className="export-legend" />
+        <div className="export-grid" style={{ gridTemplateColumns: `repeat(${config.cols}, 1fr)` }}>
+          {months.map((monthDate, index) => (
           <div key={index} className="single-calendar-wrapper export-item">
             <h3 className="calendar-month-title">
               {dayjs(monthDate).format('YYYY年 M月')}
@@ -101,6 +108,7 @@ export const ExportCalendar = ({ permits, year, device, id = 'export-calendar' }
             />
           </div>
         ))}
+        </div>
       </div>
 
       <div className="export-footer">

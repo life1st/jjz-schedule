@@ -25,7 +25,7 @@
   }
 
   .export-header {
-    margin-bottom: calc(50px * var(--export-scale, 1));
+    margin-bottom: calc(40px * var(--export-scale, 1));
     width: 100%;
 
     .header-content {
@@ -69,40 +69,90 @@
     }
   }
 
-  .export-grid {
-    display: grid;
-    gap: calc(24px * var(--export-scale, 1));
+    .export-grid-wrapper {
     background-color: white;
     padding: calc(32px * var(--export-scale, 1));
     border-radius: calc(24px * var(--export-scale, 1));
     box-shadow: 0 calc(20px * var(--export-scale, 1)) calc(60px * var(--export-scale, 1)) rgba(0, 0, 0, 0.3);
     margin: 0 auto;
     width: fit-content;
+    display: flex;
+      flex-direction: column;
+      gap: calc(20px * var(--export-scale, 1));
+    
+      .export-legend {
+        display: flex;
+        gap: calc(32px * var(--export-scale, 1));
+        padding: 0 0 calc(20px * var(--export-scale, 1)) 0;
+        margin: 0;
+        border-top: none !important;
+        border-bottom: 2px solid #f3f4f6;
+        color: $text-dark;
+        justify-content: flex-start;
+    
+        .legend-item {
+          display: flex;
+          align-items: center;
+          gap: calc(10px * var(--export-scale, 1));
+          font-size: calc(20px * var(--export-scale, 1));
+          font-weight: 600;
+    
+          .legend-marker {
+            width: calc(24px * var(--export-scale, 1));
+            height: calc(24px * var(--export-scale, 1));
+            border-radius: calc(6px * var(--export-scale, 1));
+            display: inline-block;
+    
+            &.has-permit {
+              background-color: #eef2ff;
+              border: 1px solid #c7d2fe;
+            }
+    
+            &.has-temp-permit {
+              position: relative;
+    
+              &::after {
+                content: '';
+                position: absolute;
+                bottom: calc(4px * var(--export-scale, 1));
+                left: 0;
+                right: 0;
+                height: calc(4px * var(--export-scale, 1));
+                background-color: #f59e0b;
+              }
+            }
+          }
+        }
+      }
+    
+      .export-grid {
+        display: grid;
+        gap: calc(24px * var(--export-scale, 1));
 
-    .export-item {
-      zoom: var(--export-scale, 1);
-      position: relative;
-      
-        // Centered divider for export grid
+      .export-item {
+          zoom: var(--export-scale, 1);
+          position: relative;
         &:not(:first-child)::before {
           content: '';
           position: absolute;
-          left: calc(-12px); // Half of the 24px gap
+          left: calc(-12px);
           top: 0;
           bottom: 0;
           width: 1px;
           background-color: rgba(102, 126, 234, 0.1);
         }
 
-      .calendar-month-title {
-        color: $text-dark;
-        border-bottom: 1px solid #f3f4f6;
+                .calendar-month-title {
+                  color: $text-dark;
+                  border-bottom: 1px solid #f3f4f6;
+          padding-bottom: 4px;
+          }
       }
     }
   }
 
   .export-footer {
-    margin-top: calc(60px * var(--export-scale, 1));
+    margin-top: calc(50px * var(--export-scale, 1));
     text-align: center;
     font-size: calc(20px * var(--export-scale, 1));
     opacity: 0.7;
