@@ -296,7 +296,7 @@ function SchedulePage() {
                             <h3 className="group-title">
                               <span className="title-text">第 </span>
                               <strong>{groupIndex + 1}</strong>
-                              <span className="title-text"> 轮平移 (周期间隔)</span>
+                              <span className="title-text"> 轮排期</span>
                             </h3>
                             <ul className="group-items">
                               {yearPermits.slice(groupIndex * 12, (groupIndex + 1) * 12).map((permit, index) => {
@@ -312,7 +312,7 @@ function SchedulePage() {
                                     <button
                                       className="remove-button"
                                       onClick={() => removePermit(permit.id)}
-                                      aria-label="删除此进京证"
+                                      aria-label="删除此次排期"
                                     >
                                       ✕
                                     </button>

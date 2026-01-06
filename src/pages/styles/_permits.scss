@@ -182,13 +182,13 @@ strong {
 }
 
 .remove-button {
-  background-color: $danger-red;
-  color: white;
-  border: 0;
-  width: 2rem;
-  height: 2rem;
+  background-color: transparent;
+    color: $danger-red;
+    border: 1px solid $danger-red;
+    width: 1.25rem;
+    height: 1.25rem;
   border-radius: 9999px;
-  font-size: 1.125rem;
+  font-size: 0.75rem;
   cursor: pointer;
   transition: $transition-base;
   display: flex;
@@ -197,12 +197,15 @@ strong {
   flex-shrink: 0;
 
   &:hover {
-    background-color: $danger-red-hover;
+    background-color: $danger-red;
+      color: white;
     transform: scale(1.1) rotate(-90deg);
     box-shadow: 0 4px 12px rgba(255, 71, 87, 0.3);
   }
 
   &:active {
+    background-color: $danger-red-hover;
+      color: white;
     transform: scale(0.95);
   }
 }
