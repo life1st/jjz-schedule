@@ -286,39 +286,40 @@ function SchedulePage() {
                   .map(([year, yearPermits]) => (
                     <div key={year} className="year-group">
                       <h2 className="year-title">{year} 年排期计划</h2>
-                      {Array.from({ length: Math.ceil(yearPermits.length / 12) }).map((_, groupIndex) => (
-                        <div key={groupIndex} className="permit-group">
-                          <h3 className="group-title">
-                            {year}年 第 {groupIndex + 1} 轮平移 (周期间隔)
-                          </h3>
-                          <ul className="group-items">
-                            {yearPermits.slice(groupIndex * 12, (groupIndex + 1) * 12).map((permit, index) => {
-                              const globalIndex = groupIndex * 12 + index;
-                              return (
-                                <li key={permit.id} className="permit-item">
-                                  <div className="permit-info">
-                              <span className="permit-number">#{globalIndex + 1}</span>
-                              <span className="permit-dates">
-                                {dayjs(permit.startDate).format('YYYY-MM-DD')} 至{' '}
-                                {dayjs(permit.endDate).format('YYYY-MM-DD')}
-                              </span>
-                              <span className="permit-duration">（{PERMIT_DURATION_DAYS} 天）</span>
-                            </div>
-                            <button
-                              className="remove-button"
-                              onClick={() => removePermit(permit.id)}
-                              aria-label="删除此进京证"
-                            >
-                              ✕
-                            </button>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </div>
-                ))}
-              </div>
-            ))}
+                      <div className="year-groups-container">
+                        {Array.from({ length: Math.ceil(yearPermits.length / 12) }).map((_, groupIndex) => (
+                          <div key={groupIndex} className="permit-group">
+                            <h3 className="group-title">
+                              {year}年 第 {groupIndex + 1} 轮平移 (周期间隔)
+                            </h3>
+                            <ul className="group-items">
+                              {yearPermits.slice(groupIndex * 12, (groupIndex + 1) * 12).map((permit, index) => {
+                                const globalIndex = groupIndex * 12 + index;
+                                return (
+                                  <li key={permit.id} className="permit-item">
+                                    <div className="permit-info">
+                                      <span className="permit-number">#{globalIndex + 1}</span>
+                                      <span className="permit-dates">
+                                        {dayjs(permit.startDate).format('MM-DD')} 至{' '}
+                                        {dayjs(permit.endDate).format('MM-DD')}
+                                      </span>
+                                    </div>
+                                    <button
+                                      className="remove-button"
+                                      onClick={() => removePermit(permit.id)}
+                                      aria-label="删除此进京证"
+                                    >
+                                      ✕
+                                    </button>
+                                  </li>
+                                );
+                              })}
+                            </ul>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
               </div>
           )}
         </div>

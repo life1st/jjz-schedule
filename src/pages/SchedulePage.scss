@@ -8,15 +8,11 @@
 }
 
 .content-container {
-  max-width: 1200px;
-  margin: 0 auto;
+  width: fit-content;
+    max-width: 1400px;
   display: grid;
   grid-template-columns: 1fr;
   gap: 2rem;
-
-  @media (min-width: 969px) {
-    grid-template-columns: 1fr 1fr;
-  }
 }
 
 // Modular Imports
