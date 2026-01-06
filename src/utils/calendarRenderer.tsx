@@ -67,21 +67,23 @@ export const getTileClassName = (date: Date, permits: Permit[]) => {
 
   const classes = ['has-permit']
   const mDate = dayjs(date)
-  
-  const prevDay = mDate.subtract(1, 'day').toDate()
-  const nextDay = mDate.add(1, 'day').toDate()
+  const checkDate = dayjs(date).startOf('day')
+  const isStart = permits.some((p) => checkDate.isSame(dayjs(p.startDate).startOf('day')))
+  const isEnd = permits.some((p) => checkDate.isSame(dayjs(p.endDate).startOf('day')))
+  const isInMiddle = permits.some((p) => {
+    const start = dayjs(p.startDate).startOf('day')
+    const end = dayjs(p.endDate).startOf('day')
+    return checkDate.isAfter(start) && checkDate.isBefore(end)
+  })
 
-  const hasPrev = isDateInPermit(prevDay, permits)
-  const hasNext = isDateInPermit(nextDay, permits)
-
-  if (hasPrev && hasNext) {
-    classes.push('is-middle')
-  } else if (hasPrev) {
-    classes.push('is-end')
-  } else if (hasNext) {
-    classes.push('is-start')
-  } else {
+  if (isStart && isEnd) {
     classes.push('is-single')
+  } else if (isStart) {
+    classes.push('is-start')
+  } else if (isEnd) {
+    classes.push('is-end')
+  } else if (isInMiddle) {
+    classes.push('is-middle')
   }
 
   // Detect the "group finish" dates (12th, 24th, etc. permits WITHIN THE SAME YEAR)

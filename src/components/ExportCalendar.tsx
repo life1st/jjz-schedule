@@ -14,8 +14,6 @@ interface ExportCalendarProps {
   id?: string
 }
 
-const MAX_PERMITS = 12
-
 export const ExportCalendar = ({ permits, year, device, id = 'export-calendar' }: ExportCalendarProps) => {
   if (permits.length === 0) return null
 
@@ -23,6 +21,7 @@ export const ExportCalendar = ({ permits, year, device, id = 'export-calendar' }
 
   // Filter permits that START in this year for the quota display
   const yearStartsCount = permits.filter(p => dayjs(p.startDate).year() === year).length
+  const translationCount = Math.floor(yearStartsCount / 12)
 
   // Calculate range limited to the specific year
   const sortedPermits = [...permits].sort((a, b) => a.startDate.getTime() - b.startDate.getTime())
@@ -70,7 +69,7 @@ export const ExportCalendar = ({ permits, year, device, id = 'export-calendar' }
         <div className="header-content">
           <div className="header-info">
             <h1>{year}年 进京证排期全览</h1>
-            <p>共安排 <strong>{yearStartsCount}</strong> 次进京证</p>
+            <p>共安排 <strong>{yearStartsCount}</strong> 次进京证，需平移 <strong>{translationCount}</strong> 次</p>
           </div>
           <div className="header-qr">
             <QRCodeSVG
