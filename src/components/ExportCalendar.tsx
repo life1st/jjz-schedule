@@ -3,6 +3,7 @@ import dayjs from 'dayjs'
 import { Permit } from '../types/permit'
 import { renderTileContent, getTileClassName } from '../utils/calendarRenderer'
 import 'react-calendar/dist/Calendar.css'
+import { QRCodeSVG } from 'qrcode.react'
 
 import { ExportDevice, DEVICE_CONFIGS } from '../constants/export'
 
@@ -61,7 +62,8 @@ export const ExportCalendar = ({ permits, year, device, id = 'export-calendar' }
         height: config.height ? `${config.height}px` : 'auto',
         minHeight: config.height ? `${config.height}px` : 'auto',
         padding: config.padding,
-        '--export-scale': config.scale
+        '--export-scale': config.scale,
+        justifyContent: (device === 'auto' || device === 'iphone') ? 'flex-start' : 'center'
       } as React.CSSProperties}
     >
       <div className="export-header">
@@ -91,7 +93,20 @@ export const ExportCalendar = ({ permits, year, device, id = 'export-calendar' }
       </div>
 
       <div className="export-footer">
-        生成于：{dayjs().format('YYYY-MM-DD HH:mm:ss')} | 4K 高清壁纸
+        <div className="footer-content">
+          <div className="footer-text">
+            © {dayjs().year()} 进京证排期工具 (bjjjz.vercel.app) | 生成时间：{dayjs().format('YYYY-MM-DD')}
+          </div>
+          <div className="footer-qr">
+            <QRCodeSVG
+              value="https://bjjjz.vercel.app"
+              size={Math.round(100 * config.scale)}
+              level="M"
+              bgColor="rgba(255,255,255,0.1)"
+              fgColor="white"
+            />
+          </div>
+        </div>
       </div>
     </div>
   )
