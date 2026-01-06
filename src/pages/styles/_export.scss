@@ -1,0 +1,99 @@
+@import 'variables';
+
+.export-calendar-container {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: -9999;
+  opacity: 0;
+  pointer-events: none;
+  background: $primary-gradient;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+
+  &.device-desktop,
+  &.device-ipad,
+  &.device-iphone {
+    justify-content: center;
+  }
+
+  &.device-auto {
+    justify-content: flex-start;
+  }
+
+  .export-header {
+    margin-bottom: calc(50px * var(--export-scale, 1));
+    width: 100%;
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 calc(32px * var(--export-scale, 1));
+
+      .header-info {
+        text-align: left;
+
+        h1 {
+          font-size: calc(56px * var(--export-scale, 1));
+          font-weight: 700;
+          margin-bottom: calc(16px * var(--export-scale, 1));
+          text-shadow: 0 calc(4px * var(--export-scale, 1)) calc(12px * var(--export-scale, 1)) rgba(0, 0, 0, 0.2);
+          margin-top: 0;
+        }
+
+        p {
+          font-size: calc(24px * var(--export-scale, 1));
+          opacity: 0.9;
+          margin: 0;
+
+          strong {
+            color: $accent-gold;
+          }
+        }
+      }
+
+      .header-qr {
+        background-color: rgba(255, 255, 255, 0.15);
+        padding: calc(12px * var(--export-scale, 1));
+        border-radius: calc(16px * var(--export-scale, 1));
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+  }
+
+  .export-grid {
+    display: grid;
+    gap: calc(24px * var(--export-scale, 1));
+    background-color: white;
+    padding: calc(32px * var(--export-scale, 1));
+    border-radius: calc(24px * var(--export-scale, 1));
+    box-shadow: 0 calc(20px * var(--export-scale, 1)) calc(60px * var(--export-scale, 1)) rgba(0, 0, 0, 0.3);
+    margin: 0 auto;
+    width: fit-content;
+
+    .export-item {
+      zoom: var(--export-scale, 1);
+
+      .calendar-month-title {
+        color: $text-dark;
+        border-bottom: 1px solid #f3f4f6;
+      }
+    }
+  }
+
+  .export-footer {
+    margin-top: calc(60px * var(--export-scale, 1));
+    text-align: center;
+    font-size: calc(20px * var(--export-scale, 1));
+    opacity: 0.7;
+    width: 100%;
+  }
+}

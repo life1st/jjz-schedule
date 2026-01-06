@@ -67,10 +67,23 @@ export const ExportCalendar = ({ permits, year, device, id = 'export-calendar' }
       } as React.CSSProperties}
     >
       <div className="export-header">
-        <h1>{year}年 进京证排期全览</h1>
-        <p>
-          {year}年共安排 <strong>{yearStartsCount}</strong> / {MAX_PERMITS} 次进京证
-        </p>
+        <div className="header-content">
+          <div className="header-info">
+            <h1>{year}年 进京证排期全览</h1>
+            <p>
+              {year}年共安排 <strong>{yearStartsCount}</strong> / {MAX_PERMITS} 次进京证
+            </p>
+          </div>
+          <div className="header-qr">
+            <QRCodeSVG
+              value="https://bjjjz.vercel.app"
+              size={Math.round(110 * config.scale)}
+              level="M"
+              bgColor="rgba(255,255,255,0.1)"
+              fgColor="white"
+            />
+          </div>
+        </div>
       </div>
 
       <div className="export-grid" style={{ gridTemplateColumns: `repeat(${config.cols}, 1fr)` }}>
@@ -93,20 +106,7 @@ export const ExportCalendar = ({ permits, year, device, id = 'export-calendar' }
       </div>
 
       <div className="export-footer">
-        <div className="footer-content">
-          <div className="footer-text">
-            © {dayjs().year()} 进京证排期工具 (bjjjz.vercel.app) | 生成时间：{dayjs().format('YYYY-MM-DD')}
-          </div>
-          <div className="footer-qr">
-            <QRCodeSVG
-              value="https://bjjjz.vercel.app"
-              size={Math.round(100 * config.scale)}
-              level="M"
-              bgColor="rgba(255,255,255,0.1)"
-              fgColor="white"
-            />
-          </div>
-        </div>
+        © {dayjs().year()} 进京证排期工具 (bjjjz.vercel.app) | 生成时间：{dayjs().format('YYYY-MM-DD')}
       </div>
     </div>
   )
