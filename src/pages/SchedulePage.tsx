@@ -356,25 +356,39 @@ function SchedulePage() {
                                     const isTemp = permit.type === 'temporary';
                                     if (!isTemp) globalRegularCounter++;
 
+                                    // Calculate gap with previous permit in the year
+                                    const currentIdx = sortedYearPermits.findIndex(p => p.id === permit.id);
+                                    const prevPermit = currentIdx > 0 ? sortedYearPermits[currentIdx - 1] : null;
+                                    const gapDays = prevPermit ? dayjs(permit.startDate).diff(dayjs(prevPermit.endDate).startOf('day'), 'day') - 1 : 0;
+
                                     return (
-                                      <li key={permit.id} className={`permit-item ${isTemp ? 'is-temp' : ''}`}>
-                                        <div className="permit-info">
-                                          <span className="permit-number">
-                                            {isTemp ? '临' : `#${globalRegularCounter - groupIndex * 12}`}
-                                          </span>
-                                          <span className="permit-dates">
-                                            {dayjs(permit.startDate).format('MM-DD')} 至{' '}
-                                            {dayjs(permit.endDate).format('MM-DD')}
-                                          </span>
-                                        </div>
-                                        <button
-                                          className="remove-button"
-                                          onClick={() => removePermit(permit.id)}
-                                          aria-label="删除此次排期"
-                                        >
-                                          ✕
-                                        </button>
-                                      </li>
+                                      <>
+                                        {gapDays > 0 && (
+                                          <li className="permit-gap">
+                                            <span className="gap-line"></span>
+                                            <span className="gap-text">间隔 {gapDays} 天</span>
+                                            <span className="gap-line"></span>
+                                          </li>
+                                        )}
+                                        <li className={`permit-item ${isTemp ? 'is-temp' : ''}`}>
+                                          <div className="permit-info">
+                                            <span className="permit-number">
+                                              {isTemp ? '临' : `#${globalRegularCounter - groupIndex * 12}`}
+                                            </span>
+                                            <span className="permit-dates">
+                                              {dayjs(permit.startDate).format('MM-DD')} 至{' '}
+                                              {dayjs(permit.endDate).format('MM-DD')}
+                                            </span>
+                                          </div>
+                                          <button
+                                            className="remove-button"
+                                            onClick={() => removePermit(permit.id)}
+                                            aria-label="删除此次排期"
+                                          >
+                                            ✕
+                                          </button>
+                                        </li>
+                                      </>
                                     );
                                   })}
                                 </ul>

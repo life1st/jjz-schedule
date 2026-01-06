@@ -206,6 +206,29 @@
   }
 }
 
+.permit-gap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 0.25rem 0;
+  margin: -0.25rem 0;
+
+  .gap-line {
+    flex: 1;
+    height: 1px;
+    background-color: rgba(102, 126, 234, 0.1);
+  }
+
+  .gap-text {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #9ca3af;
+    background-color: transparent;
+    padding: 0 0.5rem;
+    white-space: nowrap;
+  }
+}
 .permit-info {
   display: flex;
   flex-direction: row;
