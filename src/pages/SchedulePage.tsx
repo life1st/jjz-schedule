@@ -357,18 +357,38 @@ function SchedulePage() {
                                     const isTemp = permit.type === 'temporary';
                                     if (!isTemp) globalRegularCounter++;
 
-                                    // Calculate gap with previous permit in the year
-                                    const currentIdx = sortedYearPermits.findIndex(p => p.id === permit.id);
-                                    const prevPermit = currentIdx > 0 ? sortedYearPermits[currentIdx - 1] : null;
+                                    // Gaps only appear before regular permits.
+                                    // Measure from the end of the previous regular permit in the year.
+                                    let gapNode = null;
+                                    if (!isTemp) {
+                                      const currentIdx = sortedYearPermits.findIndex(p => p.id === permit.id);
+                                      let prevRegularPermit = null;
+                                      let hasInterveningTemp = false;
+
+                                      for (let i = currentIdx - 1; i >= 0; i--) {
+                                        const p = sortedYearPermits[i];
+                                        if (!p.type || p.type === 'regular') {
+                                          prevRegularPermit = p;
+                                          break;
+                                        } else if (p.type === 'temporary') {
+                                          hasInterveningTemp = true;
+                                        }
+                                      }
+
+                                      if (prevRegularPermit) {
+                                        gapNode = (
+                                          <GapItem 
+                                            prevEndDate={prevRegularPermit.endDate}
+                                            currentStartDate={permit.startDate} 
+                                            hasTemp={hasInterveningTemp}
+                                          />
+                                        );
+                                      }
+                                    }
 
                                     return (
                                       <>
-                                        {prevPermit && (
-                                          <GapItem
-                                            prevEndDate={prevPermit.endDate}
-                                            currentStartDate={permit.startDate}
-                                          />
-                                        )}
+                                        {gapNode}
                                         <li className={`permit-item ${isTemp ? 'is-temp' : ''}`}>
                                           <div className="permit-info">
                                             <span className="permit-number">
