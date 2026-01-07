@@ -4,6 +4,7 @@ import dayjs from 'dayjs'
 import { Permit } from '../types/permit'
 import { CalendarLegend } from '../components/CalendarLegend'
 import { SummaryInfo } from '../components/SummaryInfo'
+import { GapItem } from '../components/GapItem'
 import { renderTileContent, getTileClassName } from '../utils/calendarRenderer'
 import { ExportCalendar } from '../components/ExportCalendar'
 import { ExportDevice, DEVICE_CONFIGS } from '../constants/export'
@@ -359,16 +360,14 @@ function SchedulePage() {
                                     // Calculate gap with previous permit in the year
                                     const currentIdx = sortedYearPermits.findIndex(p => p.id === permit.id);
                                     const prevPermit = currentIdx > 0 ? sortedYearPermits[currentIdx - 1] : null;
-                                    const gapDays = prevPermit ? dayjs(permit.startDate).diff(dayjs(prevPermit.endDate).startOf('day'), 'day') - 1 : 0;
 
                                     return (
                                       <>
-                                        {gapDays > 0 && (
-                                          <li className="permit-gap">
-                                            <span className="gap-line"></span>
-                                            <span className="gap-text">间隔 {gapDays} 天</span>
-                                            <span className="gap-line"></span>
-                                          </li>
+                                        {prevPermit && (
+                                          <GapItem
+                                            prevEndDate={prevPermit.endDate}
+                                            currentStartDate={permit.startDate}
+                                          />
                                         )}
                                         <li className={`permit-item ${isTemp ? 'is-temp' : ''}`}>
                                           <div className="permit-info">
