@@ -167,7 +167,7 @@ function SchedulePage() {
       const dataUrl = await toPng(element, {
         cacheBust: true,
         width: config.width,
-        height: config.height || element.offsetHeight || element.scrollHeight,
+        height: config.height || element.scrollHeight || element.offsetHeight,
         style: {
           opacity: '1',
           zIndex: 'auto',
@@ -273,14 +273,14 @@ function SchedulePage() {
 
         <div className="permits-section">
           <div className="permits-header">
-            <h2>已选日期列表</h2>
+            <h2>已排期列表</h2>
             {permits.length > 0 && (
               <button
                 onClick={handleClearAll}
                 className="clear-all-btn"
                 title="清空所有排期"
               >
-                重置/清空
+                清空
               </button>
             )}
           </div>

@@ -61,11 +61,11 @@ export const ExportCalendar = ({ permits, year, device, id = 'export-calendar' }
       className={`export-calendar-container device-${device}`}
       style={{
         width: `${config.width}px`,
-        height: config.height ? `${config.height}px` : 'auto',
+        height: 'auto',
         minHeight: config.height ? `${config.height}px` : 'auto',
         padding: config.padding,
         '--export-scale': config.scale,
-        justifyContent: (device === 'auto' || device === 'iphone') ? 'flex-start' : 'center'
+        justifyContent: 'flex-start'
       } as React.CSSProperties}
     >
       <div className="export-header">

@@ -11,15 +11,12 @@
   color: white;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: visible;
   box-sizing: border-box;
 
   &.device-desktop,
   &.device-ipad,
-  &.device-iphone {
-    justify-content: center;
-  }
-
+  &.device-iphone,
   &.device-auto {
     justify-content: flex-start;
   }
