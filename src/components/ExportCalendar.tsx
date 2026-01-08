@@ -59,7 +59,7 @@ export const ExportCalendar = ({ permits, year, device, id = 'export-calendar' }
   return (
     <div 
       id={id}
-      className={`export-calendar-container device-${device}`}
+      className={`export-calendar-container device-${device} ${id === 'preview-calendar' ? 'is-preview' : ''}`}
       style={{
         width: `${config.width}px`,
         height: 'auto',

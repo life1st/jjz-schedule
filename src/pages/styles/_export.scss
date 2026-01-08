@@ -14,6 +14,15 @@
   overflow: visible;
   box-sizing: border-box;
 
+  &.is-preview {
+      position: relative;
+      z-index: 1001;
+      opacity: 1;
+      pointer-events: auto;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+      margin: 0 auto;
+    }
   &.device-desktop,
   &.device-ipad,
   &.device-iphone,

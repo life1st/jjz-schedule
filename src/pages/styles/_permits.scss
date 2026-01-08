@@ -26,156 +26,184 @@
       margin: 0;
     }
 
-    .clear-all-btn {
-      padding: 0.375rem 1rem;
-      font-size: 0.875rem;
-      font-weight: 600;
-      color: #ef4444;
-      background-color: #fef2f2;
-      border-radius: 9999px;
-      transition: $transition-base;
-      border: none;
-      cursor: pointer;
+                                .permits-actions {
+                                  display: flex;
+                                  gap: 0.75rem;
+                                  align-items: center;
+      .clear-all-btn {
+          padding: 0.375rem 1rem;
+          font-size: 0.875rem;
+          font-weight: 600;
+          color: #ef4444;
+          background-color: #fef2f2;
+          border-radius: 9999px;
+          transition: $transition-base;
+          border: none;
+          cursor: pointer;
 
-      &:hover {
-        background-color: #fee2e2;
-        color: #dc2626;
-      }
+        &:hover {
+            background-color: #fee2e2;
+            color: #dc2626;
+          }
 
-      &:active {
-        transform: scale(0.95);
-      }
-    }
-  }
-}
+                                                                &:active {
+                                                                  transform: scale(0.95);
+                                                                }
+                                                                }
+                                                                }
+                                                                }
 
-.empty-message {
-  text-align: center;
-  color: #9ca3af;
-  padding: 3rem;
-  font-size: 1rem;
-}
+                .empty-message {
+                  text-align: center;
+                  color: #9ca3af;
+                  padding: 3rem;
+                  font-size: 1rem;
+                }
 
-.permits-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 3rem;
+                .permits-list {
+                  list-style: none;
+                  padding: 0;
+                  margin: 0;
+                  display: flex;
+                  flex-direction: column;
+                  gap: 3rem;
 
-  .year-group {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-
-    .year-title {
-      font-size: 1.25rem;
-      padding: 0.5rem 0;
-      margin: 0 0 0.5rem 0;
-      display: block;
-      width: 100%;
-      border-bottom: 2px solid rgba(0, 109, 56, 0.1);
-
-      strong {
-        font-weight: 800;
-        color: $text-dark;
-        font-size: 1.5rem;
-      }
-
-      .title-text {
-        font-size: 0.9rem;
-        font-weight: 500;
-        color: $text-gray;
-        margin-left: 0.5rem;
-      }
-    }
-
-    .year-groups-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1.5rem;
-
-      .permit-group {
-        flex: 0 0 auto;
-        width: 320px;
+    .year-group {
         display: flex;
         flex-direction: column;
-        gap: 0.75rem;
-        padding: 1rem;
-        background-color: rgba(255, 255, 255, 0.5);
-        border-radius: 1rem;
-        border: 1px solid rgba(0, 109, 56, 0.1);
+        gap: 1.5rem;
 
-        &.temp-group {
-          border: 1px solid rgba(245, 158, 11, 0.2);
-          background-color: rgba(255, 251, 235, 0.5);
+      .year-title {
+          font-size: 1.25rem;
+          padding: 0.5rem 0;
+          margin: 0 0 0.5rem 0;
+        display: flex;
+          justify-content: space-between;
+          align-items: center;
+          width: 100%;
+          border-bottom: 2px solid rgba(0, 109, 56, 0.1);
 
-          .group-title {
-            color: #b45309;
-            border-bottom-color: rgba(245, 158, 11, 0.2);
-            
-            strong {
-              color: #b45309;
+        .title-left {
+            display: flex;
+            align-items: baseline;
+          strong {
+              font-weight: 800;
+              color: $text-dark;
+              font-size: 1.5rem;
             }
-          }
-        }
 
-        .group-title {
-          font-size: 0.95rem;
-          font-weight: 700;
-          color: $primary-green;
-          padding-bottom: 0.375rem;
-          border-bottom: 2px dashed rgba(0, 109, 56, 0.2);
-          margin-bottom: 0.125rem;
-          display: flex;
+                                                                                .title-text {
+                                                                                  font-size: 0.9rem;
+                                                                                  font-weight: 500;
+                                                                                  color: $text-gray;
+                                                                                  margin-left: 0.5rem;
+                                                                                }
+                                                                                }
+
+                                                                .view-full-btn {
+                                                                  font-size: 0.875rem;
+                                                                  font-weight: 600;
+                                                                  color: $primary-green;
+                                                                  background-color: rgba(0, 109, 56, 0.05);
+                                                                  border: 1px solid rgba(0, 109, 56, 0.1);
+                                                                  padding: 0.25rem 0.75rem;
+                                                                  border-radius: 6px;
+                                                                  cursor: pointer;
+                                                                  transition: all 0.2s;
+                                
+                                                                  &:hover {
+                                                                    background-color: rgba(0, 109, 56, 0.1);
+                                                                    transform: translateY(-1px);
+                                                                  }
+                                                                }
+                                                                }
+                                                .year-groups-container {
+                                                  display: flex;
+                                                  flex-wrap: wrap;
+                                                  gap: 1.5rem;
+
+        .permit-group {
+            flex: 0 0 auto;
+            width: 320px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            padding: 1rem;
+            background-color: rgba(255, 255, 255, 0.5);
+            border-radius: 1rem;
+            border: 1px solid rgba(0, 109, 56, 0.1);
+
+          &.temp-group {
+              border: 1px solid rgba(245, 158, 11, 0.2);
+              background-color: rgba(255, 251, 235, 0.5);
+
+            .group-title {
+                color: #b45309;
+                border-bottom-color: rgba(245, 158, 11, 0.2);
+            
+                strong {
+                    color: #b45309;
+                  }
+                }
+                }
+
+                                                                                .group-title {
+                                                                                  font-size: 0.95rem;
+                                                                                  font-weight: 700;
+                                                                                  color: $primary-green;
+                                                                                  padding-bottom: 0.375rem;
+                                                                                  border-bottom: 2px dashed rgba(0, 109, 56, 0.2);
+                                                                                  margin-bottom: 0.125rem;
+                                                                                  display: flex;
             justify-content: space-between;
             align-items: center;
 
-          strong {
-            font-weight: 700;
-            color: $primary-green;
-          }
+            strong {
+                font-weight: 700;
+                color: $primary-green;
+              }
 
-          .title-text {
-            font-size: 0.8rem;
-            font-weight: 500;
-            color: $text-gray;
-            opacity: 0.8;
-          }
-.group-remove-btn {
-  font-size: 0.75rem;
-  color: $text-gray;
-    background-color: $bg-light;
-    border: 1px solid rgba(0, 0, 0, 0.05);
-  padding: 0.125rem 0.5rem;
-  border-radius: 9999px;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-weight: 600;
-  opacity: 0.6;
+                                                                                                .title-text {
+                                                                                                  font-size: 0.8rem;
+                                                                                                  font-weight: 500;
+                                                                                                  color: $text-gray;
+                                                                                                  opacity: 0.8;
+                                                                                                }
 
-  &:hover {
-    background-color: $danger-red;
-    color: white;
-    border-color: $danger-red;
-    transform: translateY(-1px);
-    opacity: 1;
-  }
+                                                                                                .group-remove-btn {
+                                                                                                  font-size: 0.75rem;
+                                                                                                  color: $text-gray;
+                                                                                                  background-color: $bg-light;
+                                                                                                  border: 1px solid rgba(0, 0, 0, 0.05);
+                                                                                                  padding: 0.125rem 0.5rem;
+                                                                                                  border-radius: 9999px;
+                                                                                                  cursor: pointer;
+                                                                                                  transition: all 0.2s;
+                                                                                                  font-weight: 600;
+                                                                                                  opacity: 0.6;
 
-  &:active {
-    transform: translateY(0) scale(0.95);
-  }
-}
-        }
+              &:hover {
+                  background-color: $danger-red;
+                  color: white;
+                  border-color: $danger-red;
+                  transform: translateY(-1px);
+                  opacity: 1;
+                }
 
-        .group-items {
-          list-style: none;
-          padding: 0;
-          margin: 0;
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
+                                                                                                                &:active {
+                                                                                                                  transform: translateY(0) scale(0.95);
+                                                                                                                }
+                                                                                                                }
+                                                                                                                }
+
+                                                                                .group-items {
+                                                                                  list-style: none;
+                                                                                  padding: 0;
+                                                                                  margin: 0;
+                                                                                  display: flex;
+                                                                                  flex-direction: column;
+                                                                                  gap: 0.5rem;
+          
         }
       }
     }
@@ -190,7 +218,7 @@
   border-radius: 0.5rem;
   transition: $transition-smooth;
   border-left: 3px solid $primary-green;
-    background-color: #f8fafc;
+  background-color: #f8fafc;
 
   &:hover {
     transform: translateX(0.125rem);
@@ -203,7 +231,7 @@
 
     .permit-number {
       color: white;
-        background: #f59e0b;
+      background: #f59e0b;
       }
       }
       
@@ -236,14 +264,16 @@
     background-color: transparent;
     padding: 0 0.5rem;
     white-space: nowrap;
-.holiday-names {
-    margin-left: 0.5rem;
-    color: #ef4444;
-    font-weight: 700;
-    font-size: 0.8rem;
-  }
+
+    .holiday-names {
+        margin-left: 0.5rem;
+        color: #ef4444;
+        font-weight: 700;
+        font-size: 0.8rem;
+      }
   }
 }
+
 .permit-info {
   display: flex;
   flex-direction: row;
@@ -255,7 +285,7 @@
   font-size: 0.75rem;
   font-weight: 700;
   color: white;
-    background: $primary-green;
+  background: $primary-green;
   padding: 0.125rem 0.375rem;
   border-radius: 0.25rem;
   flex-shrink: 0;
@@ -270,7 +300,7 @@
 .remove-button {
   background-color: transparent;
   color: $text-gray;
-    border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   width: 1.25rem;
   height: 1.25rem;
   border-radius: 9999px;
@@ -282,13 +312,13 @@
   justify-content: center;
   flex-shrink: 0;
   opacity: 0.2;
-    transform: scale(0.9);
+  transform: scale(0.9);
 
   &:hover {
     background-color: $danger-red;
     color: white;
     border-color: $danger-red;
-      transform: scale(1.1) rotate(-90deg) !important;
+    transform: scale(1.1) rotate(-90deg) !important;
     box-shadow: 0 4px 12px rgba(255, 71, 87, 0.3);
     opacity: 1 !important;
   }
@@ -298,4 +328,5 @@
     color: white;
     transform: scale(0.95);
   }
+}
 }

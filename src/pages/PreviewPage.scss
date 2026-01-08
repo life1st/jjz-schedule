@@ -1,0 +1,72 @@
+@import 'styles/variables';
+
+.preview-page {
+    width: 100vw;
+    padding: 60px 0 120px;
+    display: flex;
+    flex-direction: column;
+    background-color: #f3f4f6;
+    overflow: hidden;
+    position: relative; // For fixed children
+
+    .floating-back-btn {
+        position: fixed;
+        top: 24px;
+        left: 24px;
+        z-index: 100;
+        background-color: white;
+        border: 1px solid #e5e7eb;
+        padding: 0.75rem 1.25rem;
+        border-radius: 99px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: $text-dark;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+        &:hover {
+            background-color: #f9fafb;
+            border-color: #d1d5db;
+            transform: scale(1.05) translateX(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+        }
+
+        .icon {
+            font-size: 1.1rem;
+        }
+    }
+
+        .preview-empty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            gap: 1rem;
+            color: $text-gray;
+
+        button {
+                padding: 0.5rem 2rem;
+                background-color: $primary-green;
+                color: white;
+                border: none;
+                border-radius: 99px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: $transition-base;
+
+            &:hover {
+                    transform: translateY(-2px);
+                    box-shadow: $shadow-md;
+            }
+        }
+    }
+}
+
+// Modular Imports for the preview components
+@import 'styles/calendar';
+@import 'styles/export';

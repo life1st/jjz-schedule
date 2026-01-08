@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Calendar from 'react-calendar'
 import dayjs from 'dayjs'
 import { Permit } from '../types/permit'
@@ -15,6 +16,7 @@ import { toJpeg } from 'html-to-image'
 
 const STORAGE_KEY = 'jjz-schedule-permits'
 function SchedulePage() {
+  const navigate = useNavigate()
   const [permits, setPermits] = useState<Permit[]>([])
   const [exportDevice, setExportDevice] = useState<ExportDevice>('auto')
   const [isTempMode, setIsTempMode] = useState(false)
@@ -277,13 +279,15 @@ function SchedulePage() {
           <div className="permits-header">
             <h2>已排期列表</h2>
             {permits.length > 0 && (
-              <button
-                onClick={handleClearAll}
-                className="clear-all-btn"
-                title="清空所有排期"
-              >
-                清空
-              </button>
+              <div className="permits-actions">
+                <button
+                  onClick={handleClearAll}
+                  className="clear-all-btn"
+                  title="清空所有排期"
+                >
+                  清空
+                </button>
+              </div>
             )}
           </div>
 
@@ -326,8 +330,16 @@ function SchedulePage() {
                     return (
                       <div key={year} className="year-group">
                         <h2 className="year-title">
-                          <strong>{year}</strong>
-                          <span className="title-text"> 年排期计划</span>
+                          <div className="title-left">
+                            <strong>{year}</strong>
+                            <span className="title-text"> 年排期计划</span>
+                          </div>
+                          <button
+                            className="view-full-btn"
+                            onClick={() => navigate(`/preview/${year}`, { state: { device: exportDevice } })}
+                          >
+                            查看完整排期
+                          </button>
                         </h2>
                         
                         <div className="year-groups-container">
