@@ -24,6 +24,10 @@ export const CalendarLegend: React.FC<CalendarLegendProps> = ({
           <span className="legend-marker has-temp-permit"></span>
           <span>临牌</span>
         </div>
+        <div className="legend-item">
+          <span className="legend-marker is-today"></span>
+          <span>今天</span>
+        </div>
       </div>
       
       {showToggle && setIsTempMode && (

@@ -121,5 +121,10 @@ export const getTileClassName = (date: Date, permits: Permit[]) => {
     if (isInMiddle) classes.push('is-temp-middle')
   }
 
+  // Today's Date Logic
+  if (checkDate.isSame(dayjs().startOf('day'))) {
+    classes.push('is-today')
+  }
+
   return classes.join(' ')
 }
