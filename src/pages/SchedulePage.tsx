@@ -11,7 +11,7 @@ import { ExportCalendar } from '../components/ExportCalendar'
 import { ExportDevice, DEVICE_CONFIGS } from '../constants/export'
 import 'react-calendar/dist/Calendar.css'
 import './SchedulePage.scss'
-import { toPng } from 'html-to-image'
+import { toJpeg } from 'html-to-image'
 
 const STORAGE_KEY = 'jjz-schedule-permits'
 function SchedulePage() {
@@ -165,8 +165,9 @@ function SchedulePage() {
     const config = DEVICE_CONFIGS[exportDevice]
 
     try {
-      const dataUrl = await toPng(element, {
+      const dataUrl = await toJpeg(element, {
         cacheBust: true,
+        quality: 0.9,
         width: config.width,
         height: config.height || element.scrollHeight || element.offsetHeight,
         style: {
@@ -178,7 +179,7 @@ function SchedulePage() {
       })
 
       const link = document.createElement('a')
-      link.download = `进京证排期_${exportDevice}_${currentYear}_${dayjs().format('YYYYMMDD')}.png`
+      link.download = `进京证排期_${exportDevice}_${currentYear}_${dayjs().format('YYYYMMDD')}.jpg`
       link.href = dataUrl
       link.click()
     } catch (error) {
