@@ -2,7 +2,7 @@
 
 .page-header {
   text-align: center;
-  color: white;
+  color: $text-dark;
   margin-bottom: 3rem;
 
   h1 {
@@ -37,12 +37,12 @@
 
     .device-selector {
       display: flex;
-      background-color: rgba(255, 255, 255, 0.1);
+      background-color: rgba(0, 109, 56, 0.05);
       padding: 0.25rem;
       border-radius: 1rem;
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(0, 109, 56, 0.1);
       backdrop-filter: blur(24px);
-      box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+      box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.03);
 
       .device-btn {
         padding: 0.5rem 1.25rem;
@@ -50,7 +50,7 @@
         font-size: 0.875rem;
         font-weight: 700;
         transition: $transition-base;
-        color: rgba(255, 255, 255, 0.6);
+        color: $text-gray;
         background: transparent;
         border: none;
         cursor: pointer;
@@ -61,8 +61,8 @@
         }
 
         &.active {
-          background-color: white;
-          color: $primary-blue;
+          background-color: $primary-green;
+            color: white;
           box-shadow: $shadow-md;
           transform: scale(1.05);
         }
@@ -71,13 +71,13 @@
 
     .export-btn {
       padding: 0.625rem 2rem;
-      background-color: white;
-      color: $primary-blue;
+      background-color: $primary-green;
+        color: white;
       border-radius: 1rem;
       font-weight: 900;
       box-shadow: $shadow-xl;
       transition: $transition-base;
-      border: 2px solid white;
+      border: 2px solid $primary-green;
       display: flex;
       align-items: center;
       gap: 0.5rem;
@@ -85,8 +85,8 @@
 
       &:hover:not(:disabled) {
         transform: translateY(-0.25rem);
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-        background-color: #f9fafb;
+        box-shadow: 0 15px 30px -8px rgba(0, 109, 56, 0.3);
+          background-color: $primary-green-hover;
       }
 
       &:active:not(:disabled) {

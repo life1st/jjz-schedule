@@ -4,7 +4,7 @@
   padding: 2rem;
   padding-bottom: 5rem;
   overflow-x: auto;
-  background: $primary-gradient;
+  background-color: $bg-light;
 }
 
 .content-container {
@@ -19,7 +19,7 @@
   margin-top: 4rem;
   text-align: center;
   font-size: 0.9rem;
-  color: white;
+  color: $secondary-teal;
   opacity: 0.6;
 }
 // Modular Imports

@@ -24,7 +24,7 @@
     padding: 0.5rem 1rem;
     border-radius: 0.5rem;
     font-weight: 600;
-    color: $primary-blue;
+    color: $primary-green;
     transition: background-color 200ms ease;
     background: transparent;
     border: none;
@@ -35,11 +35,11 @@
     }
 
     &.today-btn {
-      background-color: $primary-blue;
+      background-color: $primary-green;
       color: white;
 
       &:hover {
-        background-color: $primary-blue-hover;
+        background-color: $primary-green-hover;
       }
     }
   }
@@ -51,7 +51,7 @@
       padding: 0.5rem 1rem;
       border-radius: 0.5rem;
       font-weight: 600;
-      color: $primary-blue;
+      color: $primary-green;
       background-color: #f9fafb;
       border: 1px solid transparent;
       cursor: pointer;
@@ -65,7 +65,7 @@
       }
 
       &:focus {
-        box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.5);
+        box-shadow: 0 0 0 2px rgba(0, 109, 56, 0.4);
       }
     }
   }
@@ -98,7 +98,7 @@
       top: 0;
       bottom: 0;
       width: 1px;
-      background-color: rgba(102, 126, 234, 0.1);
+      background-color: rgba(0, 109, 56, 0.1);
     }
   
     // Handle mobile layout (one column)
@@ -150,11 +150,11 @@
 
   &--active {
     color: white;
-    background: $primary-blue;
+    background: $primary-green;
   }
 
   &.has-permit {
-    color: $primary-blue;
+    color: $primary-green;
     font-weight: 600;
     background: none !important;
     position: relative;
@@ -167,9 +167,9 @@
       bottom: 4px;
       left: 0;
       right: 0;
-      background-color: #eef2ff;
-      border-top: 1px solid #c7d2fe;
-      border-bottom: 1px solid #c7d2fe;
+      background-color: rgba(0, 109, 56, 0.08); // Slightly higher contrast
+        border-top: 1px solid rgba(0, 109, 56, 0.2); // More visible borders
+        border-bottom: 1px solid rgba(0, 109, 56, 0.2);
       z-index: -1;
       transition: all 0.2s;
     }
@@ -177,22 +177,22 @@
     &.is-start::before {
       border-top-left-radius: 8px;
       border-bottom-left-radius: 8px;
-      border-left: 1px solid #c7d2fe;
+      border-left: 1px solid rgba(0, 109, 56, 0.15);
       left: 4px;
     }
 
     &.is-end::before {
       border-top-right-radius: 8px;
       border-bottom-right-radius: 8px;
-      border-right: 1px solid #c7d2fe;
+      border-right: 1px solid rgba(0, 109, 56, 0.15);
       right: 4px;
     }
 
     &.is-single::before,
     &.is-final::before {
       border-radius: 0.5rem;
-      border-left: 1px solid #c7d2fe;
-      border-right: 1px solid #c7d2fe;
+      border-left: 1px solid rgba(0, 109, 56, 0.15);
+        border-right: 1px solid rgba(0, 109, 56, 0.15);
       left: 4px;
       right: 4px;
     }
@@ -214,7 +214,7 @@
                   transform: scale(1.05);
         
                   &::before {
-                    background-color: #e0e7ff;
+                    background-color: rgba(0, 109, 56, 0.1);
                   }
                 }
                 }
@@ -290,7 +290,7 @@
 .react-calendar__navigation button {
   font-size: 1.125rem;
   font-weight: 600;
-  color: $primary-blue;
+  color: $primary-green;
   padding: 0.75rem;
   border-radius: 0.5rem;
   transition: $transition-base;
@@ -302,7 +302,7 @@
 
 .react-calendar__month-view__weekdays {
   font-weight: 600;
-  color: $primary-blue;
+  color: $primary-green;
   text-transform: uppercase;
   font-size: 0.875rem;
 abbr {
@@ -349,8 +349,8 @@ abbr {
   display: inline-block;
 
   &.has-permit {
-    background-color: #eef2ff;
-    border: 1px solid #c7d2fe;
+    background-color: rgba(0, 109, 56, 0.05);
+      border: 1px solid rgba(0, 109, 56, 0.15);
   }
 &.has-temp-permit {
   background-color: transparent;

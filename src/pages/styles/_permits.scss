@@ -75,7 +75,7 @@
       margin: 0 0 0.5rem 0;
       display: block;
       width: 100%;
-      border-bottom: 2px solid rgba(102, 126, 234, 0.1);
+      border-bottom: 2px solid rgba(0, 109, 56, 0.1);
 
       strong {
         font-weight: 800;
@@ -105,7 +105,7 @@
         padding: 1rem;
         background-color: rgba(255, 255, 255, 0.5);
         border-radius: 1rem;
-        border: 1px solid rgba(102, 126, 234, 0.1);
+        border: 1px solid rgba(0, 109, 56, 0.1);
 
         &.temp-group {
           border: 1px solid rgba(245, 158, 11, 0.2);
@@ -124,9 +124,9 @@
         .group-title {
           font-size: 0.95rem;
           font-weight: 700;
-          color: $primary-blue;
+          color: $primary-green;
           padding-bottom: 0.375rem;
-          border-bottom: 2px dashed rgba(102, 126, 234, 0.2);
+          border-bottom: 2px dashed rgba(0, 109, 56, 0.2);
           margin-bottom: 0.125rem;
           display: flex;
             justify-content: space-between;
@@ -134,7 +134,7 @@
 
           strong {
             font-weight: 700;
-            color: $primary-blue;
+            color: $primary-green;
           }
 
           .title-text {
@@ -145,20 +145,22 @@
           }
 .group-remove-btn {
   font-size: 0.75rem;
-  color: #ef4444;
-  background-color: #fef2f2;
-  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: $text-gray;
+    background-color: $bg-light;
+    border: 1px solid rgba(0, 0, 0, 0.05);
   padding: 0.125rem 0.5rem;
   border-radius: 9999px;
   cursor: pointer;
   transition: all 0.2s;
   font-weight: 600;
+  opacity: 0.6;
 
   &:hover {
-    background-color: #ef4444;
+    background-color: $danger-red;
     color: white;
-    border-color: #ef4444;
+    border-color: $danger-red;
     transform: translateY(-1px);
+    opacity: 1;
   }
 
   &:active {
@@ -187,21 +189,28 @@
   padding: 0.625rem 0.875rem;
   border-radius: 0.5rem;
   transition: $transition-smooth;
-  border-left: 3px solid $primary-blue;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
+  border-left: 3px solid $primary-green;
+    background-color: #f8fafc;
 
   &:hover {
     transform: translateX(0.125rem);
-    box-shadow: 0 4px 10px rgba(102, 126, 234, 0.15);
+    box-shadow: 0 4px 10px rgba(0, 109, 56, 0.1);
   }
 
   &.is-temp {
     border-left-color: #f59e0b;
-    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+    background-color: #fffbeb;
 
     .permit-number {
-      color: #b45309;
-      background: rgba(245, 158, 11, 0.1);
+      color: white;
+        background: #f59e0b;
+      }
+      }
+      
+      &:hover {
+        .remove-button {
+          opacity: 1;
+          transform: scale(1);
     }
   }
 }
@@ -217,7 +226,7 @@
   .gap-line {
     flex: 1;
     height: 1px;
-    background-color: rgba(102, 126, 234, 0.1);
+    background-color: rgba(0, 109, 56, 0.1);
   }
 
   .gap-text {
@@ -245,10 +254,11 @@
 .permit-number {
   font-size: 0.75rem;
   font-weight: 700;
-  color: $primary-blue;
-  background: rgba(102, 126, 234, 0.1);
+  color: white;
+    background: $primary-green;
   padding: 0.125rem 0.375rem;
   border-radius: 0.25rem;
+  flex-shrink: 0;
 }
 
 .permit-dates {
@@ -259,8 +269,8 @@
 
 .remove-button {
   background-color: transparent;
-  color: $danger-red;
-  border: 1px solid $danger-red;
+  color: $text-gray;
+    border: 1px solid rgba(0, 0, 0, 0.1);
   width: 1.25rem;
   height: 1.25rem;
   border-radius: 9999px;
@@ -271,12 +281,16 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  opacity: 0.2;
+    transform: scale(0.9);
 
   &:hover {
     background-color: $danger-red;
     color: white;
-    transform: scale(1.1) rotate(-90deg);
+    border-color: $danger-red;
+      transform: scale(1.1) rotate(-90deg) !important;
     box-shadow: 0 4px 12px rgba(255, 71, 87, 0.3);
+    opacity: 1 !important;
   }
 
   &:active {
