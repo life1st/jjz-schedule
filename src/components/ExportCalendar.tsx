@@ -4,6 +4,7 @@ import { Permit } from '../types/permit'
 import { renderTileContent, getTileClassName } from '../utils/calendarRenderer'
 import { CalendarLegend } from './CalendarLegend'
 import { SummaryInfo } from './SummaryInfo'
+import { Copyright } from './Copyright'
 import 'react-calendar/dist/Calendar.css'
 import { QRCodeSVG } from 'qrcode.react'
 
@@ -114,9 +115,7 @@ export const ExportCalendar = ({ permits, year, device, id = 'export-calendar' }
         </div>
       </div>
 
-      <div className="export-footer">
-        © {dayjs().year()} 进京证排期工具 (bjjjz.vercel.app) | 生成时间：{dayjs().format('YYYY-MM-DD')}
-      </div>
+      <Copyright className="export-footer" />
     </div>
   )
 }

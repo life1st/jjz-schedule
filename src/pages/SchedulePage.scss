@@ -15,6 +15,13 @@
   gap: 2rem;
 }
 
+.page-footer {
+  margin-top: 4rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: white;
+  opacity: 0.6;
+}
 // Modular Imports
 @import 'styles/header';
 @import 'styles/calendar';

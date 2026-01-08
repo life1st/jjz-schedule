@@ -5,6 +5,7 @@ import { Permit } from '../types/permit'
 import { CalendarLegend } from '../components/CalendarLegend'
 import { SummaryInfo } from '../components/SummaryInfo'
 import { GapItem } from '../components/GapItem'
+import { Copyright } from '../components/Copyright'
 import { renderTileContent, getTileClassName } from '../utils/calendarRenderer'
 import { ExportCalendar } from '../components/ExportCalendar'
 import { ExportDevice, DEVICE_CONFIGS } from '../constants/export'
@@ -422,6 +423,7 @@ function SchedulePage() {
           )}
         </div>
       </div>
+      <Copyright className="page-footer" showTime={false} />
     </div>
   )
 }
