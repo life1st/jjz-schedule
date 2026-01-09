@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useRef, useState } from 'react'
 import Calendar from 'react-calendar'
 import dayjs from 'dayjs'
 import { Permit } from '../types/permit'
@@ -18,6 +19,10 @@ interface ExportCalendarProps {
 }
 
 export const ExportCalendar = ({ permits, year, device, id = 'export-calendar' }: ExportCalendarProps) => {
+  const [scale, setScale] = useState(1)
+  const calendarRef = useRef<HTMLDivElement>(null)
+  const headerRef = useRef<HTMLDivElement>(null)
+
   if (permits.length === 0) return null
 
   const config = DEVICE_CONFIGS[device]
@@ -49,12 +54,27 @@ export const ExportCalendar = ({ permits, year, device, id = 'export-calendar' }
   let endMonth = dayjs(yearPermits[yearPermits.length - 1].endDate).endOf('month')
   if (endMonth.year() > year) endMonth = yearEnd.endOf('month')
 
-  const months: Date[] = []
-  let current = startMonth
-  while (current.isBefore(endMonth) || current.isSame(endMonth, 'month')) {
-    months.push(current.toDate())
-    current = current.add(1, 'month')
-  }
+
+  const months = useMemo(() => {
+    const months: Date[] = []
+    let current = startMonth
+    while (current.isBefore(endMonth) || current.isSame(endMonth, 'month')) {
+      months.push(current.toDate())
+      current = current.add(1, 'month')
+    }
+    return months
+  }, [startMonth, endMonth])
+
+  useEffect(() => {
+    if (calendarRef.current && config.height) {
+      const calendarRect = calendarRef.current.getBoundingClientRect()
+      // const scale = Math.min(contentHeight / calendarRect.height, config.width / calendarRect.width)
+      const scale = Number((config.height * 0.7 / calendarRect.height).toFixed(2))
+      if (scale) {
+        setScale(scale)
+      }
+    }
+  }, [])
 
   return (
     <div 
@@ -62,14 +82,13 @@ export const ExportCalendar = ({ permits, year, device, id = 'export-calendar' }
       className={`export-calendar-container device-${device} ${id === 'preview-calendar' ? 'is-preview' : ''}`}
       style={{
         width: `${config.width}px`,
-        height: 'auto',
-        minHeight: config.height ? `${config.height}px` : 'auto',
+        height: `${config.height}px`,
         padding: config.padding,
         '--export-scale': config.scale,
         justifyContent: 'flex-start'
       } as React.CSSProperties}
     >
-      <div className="export-header">
+      <div className="export-header" ref={headerRef}>
         <div className="header-content">
           <div className="header-info">
             <h1>{year}年 进京证排期全览</h1>
@@ -92,7 +111,7 @@ export const ExportCalendar = ({ permits, year, device, id = 'export-calendar' }
 
       </div>
 
-      <div className="export-grid-wrapper">
+      <div className="export-grid-wrapper" ref={calendarRef} style={{ transform: `scale(${scale})` }}>
         <CalendarLegend className="export-legend" />
         <div className="export-grid" style={{ gridTemplateColumns: `repeat(${config.cols}, 1fr)` }}>
           {months.map((monthDate, index) => (

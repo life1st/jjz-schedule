@@ -88,10 +88,11 @@
     margin: 0 auto;
     width: fit-content;
     display: flex;
-      flex-direction: column;
-      gap: calc(20px * var(--export-scale, 1));
+    flex-direction: column;
+    transform-origin: top center;
+    gap: calc(20px * var(--export-scale, 1));
     
-      .export-legend {
+    .export-legend {
         display: flex;
         gap: calc(32px * var(--export-scale, 1));
         padding: 0 0 calc(20px * var(--export-scale, 1)) 0;
