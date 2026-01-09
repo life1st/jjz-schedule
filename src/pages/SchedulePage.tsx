@@ -32,7 +32,7 @@ function SchedulePage() {
   // Helper to update state and localStorage simultaneously
   const updatePermits = (newPermits: Permit[]) => {
     setPermits(newPermits)
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(newPermits))
+    localStorage.setItem(STORAGE_KEY, serializePermits(newPermits))
 
     // Also update current plan if it exists
     if (currentPlanId) {
@@ -40,14 +40,22 @@ function SchedulePage() {
         p.id === currentPlanId ? { ...p, permits: newPermits } : p
       )
       setPlans(updatedPlans)
-      localStorage.setItem(PLANS_STORAGE_KEY, JSON.stringify(updatedPlans))
+      const storagePlans = updatedPlans.map(p => ({
+        ...p,
+        permits: serializePermits(p.permits)
+      }))
+      localStorage.setItem(PLANS_STORAGE_KEY, JSON.stringify(storagePlans))
     }
   }
 
   const updatePlans = (newPlans: Plan[], activePlanId: string | null = currentPlanId) => {
     setPlans(newPlans)
     setCurrentPlanId(activePlanId)
-    localStorage.setItem(PLANS_STORAGE_KEY, JSON.stringify(newPlans))
+    const storagePlans = newPlans.map(p => ({
+      ...p,
+      permits: serializePermits(p.permits)
+    }))
+    localStorage.setItem(PLANS_STORAGE_KEY, JSON.stringify(storagePlans))
   }
 
   // Load permits and plans from localStorage on mount
@@ -60,11 +68,13 @@ function SchedulePage() {
         const parsed = JSON.parse(storedPlans)
         loadedPlans = parsed.map((p: any) => ({
           ...p,
-          permits: p.permits.map((perm: any) => ({
-            ...perm,
-            startDate: new Date(perm.startDate),
-            endDate: new Date(perm.endDate)
-          }))
+          permits: typeof p.permits === 'string'
+            ? deserializePermits(p.permits)
+            : p.permits.map((perm: any) => ({
+              ...perm,
+              startDate: new Date(perm.startDate),
+              endDate: new Date(perm.endDate)
+            }))
         }))
         setPlans(loadedPlans)
       } catch (error) {
@@ -76,20 +86,25 @@ function SchedulePage() {
     const stored = localStorage.getItem(STORAGE_KEY)
     if (stored) {
       try {
-        const parsed = JSON.parse(stored)
-        const permitsWithDates = parsed.map((p: any) => ({
-          ...p,
-          startDate: new Date(p.startDate),
-          endDate: new Date(p.endDate),
-          type: p.type || 'regular',
-        }))
+        let permitsWithDates: Permit[] = []
+        // Compact format starts with R or T, legacy starts with [ or "
+        if (stored.startsWith('R') || stored.startsWith('T')) {
+          permitsWithDates = deserializePermits(stored)
+        } else {
+          const parsed = JSON.parse(stored)
+          permitsWithDates = parsed.map((p: any) => ({
+            ...p,
+            startDate: new Date(p.startDate),
+            endDate: new Date(p.endDate),
+            type: p.type || 'regular',
+          }))
+        }
         setPermits(permitsWithDates)
 
         // Try to match current permits with a plan if not explicitly set
         if (loadedPlans.length > 0) {
-          // For simplicity, we don't auto-select unless we have a specific reason
-          // But let's check if the current permits exactly match a plan
-          const matchingPlan = loadedPlans.find(p => JSON.stringify(p.permits) === JSON.stringify(permitsWithDates))
+          const currentSerialized = serializePermits(permitsWithDates)
+          const matchingPlan = loadedPlans.find(p => serializePermits(p.permits) === currentSerialized)
           if (matchingPlan) setCurrentPlanId(matchingPlan.id)
         }
       } catch (error) {
@@ -100,8 +115,16 @@ function SchedulePage() {
     // 3. Load from URL if present
     const data = searchParams.get('data')
     if (data) {
+      if (data === localStorage.getItem(STORAGE_KEY)) {
+        // Data is identical, silently clear param
+        searchParams.delete('data')
+        setSearchParams(searchParams)
+        return
+      }
+
       const sharedPermits = deserializePermits(data)
       if (sharedPermits.length > 0) {
+
         if (window.confirm(`检测到分享的 ${sharedPermits.length} 条排期数据，是否导入并作为新方案保存？`)) {
           const newPlanId = Date.now().toString()
           const newPlan: Plan = {
@@ -113,7 +136,7 @@ function SchedulePage() {
           const newPlans = [...loadedPlans, newPlan]
           updatePlans(newPlans, newPlanId)
           setPermits(sharedPermits)
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(sharedPermits))
+          localStorage.setItem(STORAGE_KEY, serializePermits(sharedPermits))
 
           // Clear URL param
           searchParams.delete('data')

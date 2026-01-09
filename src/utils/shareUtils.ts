@@ -6,55 +6,102 @@ dayjs.extend(customParseFormat)
 
 /**
  * Serializes an array of permits into a compact string format for URL sharing.
- * Format: [Type][YY][M_base36][D_base36]
+ * Format: $[YYYY][Type][M_base36][D_base36]...
  * Types: R = Regular, T = Temporary
- * Example: R2611 (2026-01-01)
+ * Example: $2026R11T5k
+ * Multi-year: $2025Rck$2026R11
  */
-export const serializePermits = (permits: Permit[]): string => {
-  return permits
-    .sort((a, b) => a.startDate.getTime() - b.startDate.getTime())
-    .map(p => {
+export const serializePermits = (permits: Permit[], filterYear?: number): string => {
+  const sortedPermits = [...permits].sort((a, b) => a.startDate.getTime() - b.startDate.getTime())
+  
+  const permitsByYear: Record<number, Permit[]> = {}
+  sortedPermits.forEach(p => {
+    const y = dayjs(p.startDate).year()
+    if (filterYear !== undefined && y !== filterYear) return
+    if (!permitsByYear[y]) permitsByYear[y] = []
+    permitsByYear[y].push(p)
+  })
+
+  let result = ''
+  const years = Object.keys(permitsByYear).map(Number).sort()
+  
+  years.forEach(year => {
+    result += `$${year}`
+    permitsByYear[year].forEach(p => {
       const typeChar = p.type === 'temporary' ? 'T' : 'R'
-      const yearStr = dayjs(p.startDate).format('YY')
-      const monthStr = (dayjs(p.startDate).month() + 1).toString(36) // 1-c
-      const dayStr = dayjs(p.startDate).date().toString(36) // 1-v
-      return `${typeChar}${yearStr}${monthStr}${dayStr}`
+      const monthStr = (dayjs(p.startDate).month() + 1).toString(36)
+      const dayStr = dayjs(p.startDate).date().toString(36)
+      result += `${typeChar}${monthStr}${dayStr}`
     })
-    .join('')
+  })
+  
+  return result
 }
 
 /**
  * Deserializes a compact string back into an array of permits.
  */
 export const deserializePermits = (data: string): Permit[] => {
+  if (!data) return []
+
+  // Check if it's the new format (starts with $)
+  if (!data.startsWith('$')) {
+    // Falls back to old format check (YYYY followed by [RT]) or legacy format
+    const yearMatches = data.match(/\d{4}(?:[RT][0-9a-z]{2})*/g)
+    if (!yearMatches) return []
+    
+    const permits: Permit[] = []
+    yearMatches.forEach(block => {
+      const year = parseInt(block.substring(0, 4), 10)
+      const permitData = block.substring(4)
+      const matches = permitData.match(/[RT][0-9a-z]{2}/g)
+      if (!matches) return
+      matches.forEach((match, index) => {
+        const typeChar = match[0]
+        const month = parseInt(match[1], 36)
+        const day = parseInt(match[2], 36)
+        const type: PermitType = typeChar === 'T' ? 'temporary' : 'regular'
+        const startDate = dayjs().year(year).month(month - 1).date(day).startOf('day').toDate()
+        const duration = type === 'temporary' ? 15 : 7
+        const endDate = dayjs(startDate).add(duration - 1, 'day').endOf('day').toDate()
+        permits.push({ id: `${Date.now()}-${year}-${index}`, startDate, endDate, type })
+      })
+    })
+    return permits
+  }
+
   const permits: Permit[] = []
-  // Match patterns like R2611 or T26ak
-  const matches = data.match(/[RT]\d{2}[0-9a-z]{2}/g)
+  // Split by $ and filter empty strings
+  const blocks = data.split('$').filter(Boolean)
 
-  if (!matches) return []
+  blocks.forEach(block => {
+    const year = parseInt(block.substring(0, 4), 10)
+    const permitData = block.substring(4)
+    const matches = permitData.match(/[RT][0-9a-z]{2}/g)
+    if (!matches) return
 
-  matches.forEach((match, index) => {
-    const typeChar = match[0]
-    const year = parseInt(match.substring(1, 3), 10)
-    const month = parseInt(match[3], 36)
-    const day = parseInt(match[4], 36)
-    
-    const type: PermitType = typeChar === 'T' ? 'temporary' : 'regular'
-    const startDate = dayjs()
-      .year(2000 + year)
-      .month(month - 1)
-      .date(day)
-      .startOf('day')
-      .toDate()
-    
-    const duration = type === 'temporary' ? 15 : 7
-    const endDate = dayjs(startDate).add(duration - 1, 'day').endOf('day').toDate()
+    matches.forEach((match, index) => {
+      const typeChar = match[0]
+      const month = parseInt(match[1], 36)
+      const day = parseInt(match[2], 36)
+      
+      const type: PermitType = typeChar === 'T' ? 'temporary' : 'regular'
+      const startDate = dayjs()
+        .year(year)
+        .month(month - 1)
+        .date(day)
+        .startOf('day')
+        .toDate()
+      
+      const duration = type === 'temporary' ? 15 : 7
+      const endDate = dayjs(startDate).add(duration - 1, 'day').endOf('day').toDate()
 
-    permits.push({
-      id: `${Date.now()}-${index}`,
-      startDate,
-      endDate,
-      type
+      permits.push({
+        id: `${Date.now()}-${year}-${index}`,
+        startDate,
+        endDate,
+        type
+      })
     })
   })
 
