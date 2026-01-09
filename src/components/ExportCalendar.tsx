@@ -94,7 +94,6 @@ export const ExportCalendar = ({ permits, year, device, id = 'export-calendar' }
           <div className="header-info">
             <h1>{year}年 进京证排期全览</h1>
             <SummaryInfo
-              year={year}
               regularCount={regularCount}
               shiftCount={shiftCount}
             />
