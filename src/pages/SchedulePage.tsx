@@ -86,20 +86,29 @@ function SchedulePage() {
     const stored = localStorage.getItem(STORAGE_KEY)
     if (stored) {
       try {
-        let permitsWithDates: Permit[] = []
-        // Compact format starts with R or T, legacy starts with [ or "
-        if (stored.startsWith('R') || stored.startsWith('T')) {
-          permitsWithDates = deserializePermits(stored)
-        } else {
-          const parsed = JSON.parse(stored)
-          permitsWithDates = parsed.map((p: any) => ({
-            ...p,
-            startDate: new Date(p.startDate),
-            endDate: new Date(p.endDate),
-            type: p.type || 'regular',
-          }))
+        let permitsWithDates: Permit[] = deserializePermits(stored)
+
+        // If no permits found via compact format, try legacy JSON format
+        if (permitsWithDates.length === 0) {
+          try {
+            const parsed = JSON.parse(stored)
+            if (Array.isArray(parsed)) {
+              permitsWithDates = parsed.map((p: any) => ({
+                ...p,
+                startDate: new Date(p.startDate),
+                endDate: new Date(p.endDate),
+                type: p.type || 'regular',
+              }))
+            }
+          } catch (e) {
+            // Not JSON either, or malformed
+            console.warn('Stored data is neither compact format nor valid JSON array')
+          }
         }
-        setPermits(permitsWithDates)
+
+        if (permitsWithDates.length > 0) {
+          setPermits(permitsWithDates)
+        }
 
         // Try to match current permits with a plan if not explicitly set
         if (loadedPlans.length > 0) {

@@ -119,12 +119,16 @@
 
   .calendar-month-title {
     text-align: center;
-    font-size: 1.25rem;
+    font-size: 1.125rem;
     font-weight: 700;
     color: $text-dark;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
     padding-bottom: 0.5rem;
     border-bottom: 1px solid #f3f4f6;
+@media (min-width: 768px) {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+  }
   }
 }
 
@@ -137,12 +141,16 @@
 }
 
 .react-calendar__tile {
-  padding: 1rem;
-  font-size: 0.95rem;
+  padding: 0.75rem 0.5rem;
+    font-size: 0.875rem;
   border-radius: 0.5rem;
   position: relative;
   transition: $transition-base;
 
+  @media (min-width: 768px) {
+      padding: 1rem;
+      font-size: 0.95rem;
+    }
   &:enabled:hover {
     transform: scale(1.05);
     background-color: #f0f0f0;
