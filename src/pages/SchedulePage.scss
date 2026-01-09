@@ -9,7 +9,8 @@
 
 .content-container {
   width: fit-content;
-    max-width: 1400px;
+  margin: 0 auto;
+  max-width: 1400px;
   display: grid;
   grid-template-columns: 1fr;
   gap: 2rem;
