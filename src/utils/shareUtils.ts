@@ -6,17 +6,19 @@ dayjs.extend(customParseFormat)
 
 /**
  * Serializes an array of permits into a compact string format for URL sharing.
- * Format: [Type][YYMMDD]
+ * Format: [Type][YY][M_base36][D_base36]
  * Types: R = Regular, T = Temporary
- * Example: R260101T260215
+ * Example: R2611 (2026-01-01)
  */
 export const serializePermits = (permits: Permit[]): string => {
   return permits
     .sort((a, b) => a.startDate.getTime() - b.startDate.getTime())
     .map(p => {
       const typeChar = p.type === 'temporary' ? 'T' : 'R'
-      const dateStr = dayjs(p.startDate).format('YYMMDD')
-      return `${typeChar}${dateStr}`
+      const yearStr = dayjs(p.startDate).format('YY')
+      const monthStr = (dayjs(p.startDate).month() + 1).toString(36) // 1-c
+      const dayStr = dayjs(p.startDate).date().toString(36) // 1-v
+      return `${typeChar}${yearStr}${monthStr}${dayStr}`
     })
     .join('')
 }
@@ -26,17 +28,25 @@ export const serializePermits = (permits: Permit[]): string => {
  */
 export const deserializePermits = (data: string): Permit[] => {
   const permits: Permit[] = []
-  // Match patterns like R260101 or T260215
-  const matches = data.match(/[RT]\d{6}/g)
+  // Match patterns like R2611 or T26ak
+  const matches = data.match(/[RT]\d{2}[0-9a-z]{2}/g)
 
   if (!matches) return []
 
   matches.forEach((match, index) => {
     const typeChar = match[0]
-    const dateStr = match.substring(1)
+    const year = parseInt(match.substring(1, 3), 10)
+    const month = parseInt(match[3], 36)
+    const day = parseInt(match[4], 36)
     
     const type: PermitType = typeChar === 'T' ? 'temporary' : 'regular'
-    const startDate = dayjs(dateStr, 'YYMMDD').startOf('day').toDate()
+    const startDate = dayjs()
+      .year(2000 + year)
+      .month(month - 1)
+      .date(day)
+      .startOf('day')
+      .toDate()
+    
     const duration = type === 'temporary' ? 15 : 7
     const endDate = dayjs(startDate).add(duration - 1, 'day').endOf('day').toDate()
 
