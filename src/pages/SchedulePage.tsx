@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Calendar from 'react-calendar'
 import dayjs from 'dayjs'
-import { Permit } from '../types/permit'
+import { Permit, Plan } from '../types/permit'
 import { CalendarLegend } from '../components/CalendarLegend'
 import { SummaryInfo } from '../components/SummaryInfo'
 import { GapItem } from '../components/GapItem'
@@ -15,9 +15,13 @@ import './SchedulePage.scss'
 import { toJpeg } from 'html-to-image'
 
 const STORAGE_KEY = 'jjz-schedule-permits'
+const PLANS_STORAGE_KEY = 'jjz-schedule-plans'
+
 function SchedulePage() {
   const navigate = useNavigate()
   const [permits, setPermits] = useState<Permit[]>([])
+  const [plans, setPlans] = useState<Plan[]>([])
+  const [currentPlanId, setCurrentPlanId] = useState<string | null>(null)
   const [exportDevice, setExportDevice] = useState<ExportDevice>('auto')
   const [isTempMode, setIsTempMode] = useState(false)
 
@@ -25,10 +29,46 @@ function SchedulePage() {
   const updatePermits = (newPermits: Permit[]) => {
     setPermits(newPermits)
     localStorage.setItem(STORAGE_KEY, JSON.stringify(newPermits))
+
+    // Also update current plan if it exists
+    if (currentPlanId) {
+      const updatedPlans = plans.map(p =>
+        p.id === currentPlanId ? { ...p, permits: newPermits } : p
+      )
+      setPlans(updatedPlans)
+      localStorage.setItem(PLANS_STORAGE_KEY, JSON.stringify(updatedPlans))
+    }
   }
 
-  // Load permits from localStorage on mount
+  const updatePlans = (newPlans: Plan[], activePlanId: string | null = currentPlanId) => {
+    setPlans(newPlans)
+    setCurrentPlanId(activePlanId)
+    localStorage.setItem(PLANS_STORAGE_KEY, JSON.stringify(newPlans))
+  }
+
+  // Load permits and plans from localStorage on mount
   useEffect(() => {
+    // 1. Load Plans
+    const storedPlans = localStorage.getItem(PLANS_STORAGE_KEY)
+    let loadedPlans: Plan[] = []
+    if (storedPlans) {
+      try {
+        const parsed = JSON.parse(storedPlans)
+        loadedPlans = parsed.map((p: any) => ({
+          ...p,
+          permits: p.permits.map((perm: any) => ({
+            ...perm,
+            startDate: new Date(perm.startDate),
+            endDate: new Date(perm.endDate)
+          }))
+        }))
+        setPlans(loadedPlans)
+      } catch (error) {
+        console.error('Failed to load plans:', error)
+      }
+    }
+
+    // 2. Load Current Permits (Legacy or current active)
     const stored = localStorage.getItem(STORAGE_KEY)
     if (stored) {
       try {
@@ -37,14 +77,60 @@ function SchedulePage() {
           ...p,
           startDate: new Date(p.startDate),
           endDate: new Date(p.endDate),
-          type: p.type || 'regular', // Default to regular for legacy data
+          type: p.type || 'regular',
         }))
         setPermits(permitsWithDates)
+
+        // Try to match current permits with a plan if not explicitly set
+        if (loadedPlans.length > 0) {
+          // For simplicity, we don't auto-select unless we have a specific reason
+          // But let's check if the current permits exactly match a plan
+          const matchingPlan = loadedPlans.find(p => JSON.stringify(p.permits) === JSON.stringify(permitsWithDates))
+          if (matchingPlan) setCurrentPlanId(matchingPlan.id)
+        }
       } catch (error) {
         console.error('Failed to load permits:', error)
       }
     }
   }, [])
+
+  const handleSaveAsNewPlan = () => {
+    // Auto-generate name instead of prompt
+    const newPlanId = Date.now().toString()
+    const name = `方案 ${plans.length + 1}`
+
+    const newPlan: Plan = {
+      id: newPlanId,
+      name,
+      permits: [...permits]
+    }
+
+    updatePlans([...plans, newPlan], newPlanId)
+  }
+
+  const handleSwitchPlan = (id: string) => {
+    const plan = plans.find(p => p.id === id)
+    if (plan) {
+      // Ensure we create a new array to trigger re-renders
+      const newPermits = [...plan.permits]
+      setPermits(newPermits)
+      setCurrentPlanId(id)
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(newPermits))
+    }
+  }
+
+  const handleRemovePlan = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation()
+    if (window.confirm('确定要删除该方案吗？')) {
+      const newPlans = plans.filter(p => p.id !== id)
+      const newCurrentId = currentPlanId === id ? null : currentPlanId
+      updatePlans(newPlans, newCurrentId)
+    }
+  }
+
+  const handleClearPlanSelection = () => {
+    setCurrentPlanId(null)
+  }
 
   // Handle date click
   const handleDateClick = (date: Date) => {
@@ -277,9 +363,39 @@ function SchedulePage() {
 
         <div className="permits-section">
           <div className="permits-header">
-            <h2>已排期列表</h2>
-            {permits.length > 0 && (
-              <div className="permits-actions">
+            <div className="header-left">
+              <h2>已排期列表</h2>
+              <div className="plans-tabs">
+                {plans.map(plan => (
+                  <div
+                    key={plan.id}
+                    className={`plan-tab ${currentPlanId === plan.id ? 'active' : ''}`}
+                    onClick={() => handleSwitchPlan(plan.id)}
+                  >
+                    <span className="plan-name">{plan.name}</span>
+                    <button
+                      className="remove-plan-btn"
+                      onClick={(e) => handleRemovePlan(e, plan.id)}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+                {currentPlanId && (
+                  <button className="clear-selection-btn" onClick={handleClearPlanSelection} title="取消选择方案">
+                    ✕
+                  </button>
+                )}
+              </div>
+            </div>
+            <div className="permits-actions">
+              <button
+                className="save-plan-btn"
+                onClick={handleSaveAsNewPlan}
+              >
+                保存为新方案
+              </button>
+              {permits.length > 0 && (
                 <button
                   onClick={handleClearAll}
                   className="clear-all-btn"
@@ -287,8 +403,8 @@ function SchedulePage() {
                 >
                   清空
                 </button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
 
           {permits.length === 0 ? (

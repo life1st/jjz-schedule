@@ -7,6 +7,13 @@ export interface Permit {
   type: PermitType
 }
 
-export interface PermitState {
+export interface Plan {
+  id: string
+  name: string
   permits: Permit[]
+}
+
+export interface PermitState {
+  plans: Plan[]
+  currentPlanId: string | null
 }
