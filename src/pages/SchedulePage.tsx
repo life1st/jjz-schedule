@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import Calendar from 'react-calendar'
 import dayjs from 'dayjs'
@@ -337,6 +337,7 @@ function SchedulePage() {
 
     const config = DEVICE_CONFIGS[exportDevice]
 
+    console.log(config, 'confg')
     try {
       const dataUrl = await toJpeg(element, {
         cacheBust: true,
@@ -382,6 +383,7 @@ function SchedulePage() {
                 key={d}
                 className={`device-btn ${exportDevice === d ? 'active' : ''}`}
                 onClick={() => setExportDevice(d)}
+                disabled={isExporting}
               >
                 {d === 'auto' ? '自适应' : d.toUpperCase()}
               </button>
@@ -390,13 +392,21 @@ function SchedulePage() {
           <button
             className="export-btn"
             onClick={handleExportImage}
+            disabled={isExporting}
             title="导出为图片"
           >
-            📸 导出
+            {isExporting ? (
+              <>
+                <span className="loading-icon">⌛</span> 导出中...
+              </>
+            ) : (
+              '📸 导出'
+            )}
           </button>
           <button
             className="share-btn-header"
             onClick={handleShare}
+            disabled={isExporting}
             title="分享当前排期"
           >
             🔗 分享
@@ -632,7 +642,7 @@ function SchedulePage() {
                                     }
 
                                     return (
-                                      <>
+                                      <React.Fragment key={permit.id}>
                                         {gapNode}
                                         <li className={`permit-item ${isTemp ? 'is-temp' : ''}`}>
                                           <div className="permit-info">
@@ -652,7 +662,7 @@ function SchedulePage() {
                                             ✕
                                           </button>
                                         </li>
-                                      </>
+                                      </React.Fragment>
                                     );
                                   })}
                                 </ul>

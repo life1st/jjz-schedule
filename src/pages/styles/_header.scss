@@ -109,6 +109,10 @@
         cursor: not-allowed;
         filter: saturate(0);
       }
+.loading-icon {
+  display: inline-block;
+  animation: flip-hourglass 2s infinite ease-in-out;
+}
     }
 
         .share-btn-header {
@@ -218,5 +222,27 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes flip-hourglass {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  45% {
+    transform: rotate(180deg);
+  }
+
+  50% {
+    transform: rotate(180deg);
+  }
+
+  95% {
+    transform: rotate(360deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
   }
 }
