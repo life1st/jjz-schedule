@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import Calendar from 'react-calendar'
 import dayjs from 'dayjs'
 import { Permit, Plan } from '../types/permit'
@@ -13,12 +13,14 @@ import { ExportDevice, DEVICE_CONFIGS } from '../constants/export'
 import 'react-calendar/dist/Calendar.css'
 import './SchedulePage.scss'
 import { toJpeg } from 'html-to-image'
+import { serializePermits, deserializePermits } from '../utils/shareUtils'
 
 const STORAGE_KEY = 'jjz-schedule-permits'
 const PLANS_STORAGE_KEY = 'jjz-schedule-plans'
 
 function SchedulePage() {
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
   const [permits, setPermits] = useState<Permit[]>([])
   const [plans, setPlans] = useState<Plan[]>([])
   const [currentPlanId, setCurrentPlanId] = useState<string | null>(null)
@@ -92,6 +94,31 @@ function SchedulePage() {
         console.error('Failed to load permits:', error)
       }
     }
+
+    // 3. Load from URL if present
+    const data = searchParams.get('data')
+    if (data) {
+      const sharedPermits = deserializePermits(data)
+      if (sharedPermits.length > 0) {
+        if (window.confirm(`检测到分享的 ${sharedPermits.length} 条排期数据，是否导入并作为新方案保存？`)) {
+          const newPlanId = Date.now().toString()
+          const newPlan: Plan = {
+            id: newPlanId,
+            name: '分享的方案',
+            permits: sharedPermits
+          }
+          // Update plans and set as current
+          const newPlans = [...loadedPlans, newPlan]
+          updatePlans(newPlans, newPlanId)
+          setPermits(sharedPermits)
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(sharedPermits))
+
+          // Clear URL param
+          searchParams.delete('data')
+          setSearchParams(searchParams)
+        }
+      }
+    }
   }, [])
 
   const handleSaveAsNewPlan = () => {
@@ -130,6 +157,27 @@ function SchedulePage() {
 
   const handleClearPlanSelection = () => {
     setCurrentPlanId(null)
+  }
+
+  const handleShare = () => {
+    if (permits.length === 0) {
+      alert('请先添加排期再进行分享')
+      return
+    }
+
+    const data = serializePermits(permits)
+    const url = new URL(window.location.href)
+    url.searchParams.set('data', data)
+
+    // Copy to clipboard
+    navigator.clipboard.writeText(url.toString())
+      .then(() => {
+        alert('分享链接已复制到剪贴板')
+      })
+      .catch(err => {
+        console.error('Failed to copy share link:', err)
+        alert('复制链接失败，请手动复制浏览器地址栏')
+      })
   }
 
   // Handle date click
@@ -308,6 +356,13 @@ function SchedulePage() {
           >
             📸 导出
           </button>
+          <button
+            className="share-btn-header"
+            onClick={handleShare}
+            title="分享当前排期"
+          >
+            🔗 分享
+          </button>
         </div>
       </header>
 
@@ -390,7 +445,7 @@ function SchedulePage() {
             </div>
             <div className="permits-actions">
               <button
-                className="save-plan-btn"
+                className="save-plan-btn" 
                 onClick={handleSaveAsNewPlan}
               >
                 保存为新方案

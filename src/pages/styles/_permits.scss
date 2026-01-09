@@ -133,9 +133,30 @@
           }
       
           &:active {
-            transform: scale(0.95);
+          transform: scale(0.95);
           }
-        }
+          }
+.share-btn {
+  padding: 0.375rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: $primary-green;
+  background-color: rgba(0, 109, 56, 0.05);
+  border: 1px solid rgba(0, 109, 56, 0.1);
+  border-radius: 9999px;
+  transition: $transition-base;
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgba(0, 109, 56, 0.1);
+    border-color: rgba(0, 109, 56, 0.2);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
       .clear-all-btn {
           padding: 0.375rem 1rem;
           font-size: 0.875rem;

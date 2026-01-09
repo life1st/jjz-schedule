@@ -100,5 +100,30 @@
         filter: saturate(0);
       }
     }
+.share-btn-header {
+  padding: 0.625rem 2rem;
+  background-color: white;
+  color: $primary-green;
+  border-radius: 1rem;
+  font-weight: 900;
+  box-shadow: $shadow-md;
+  transition: $transition-base;
+  border: 2px solid rgba(0, 109, 56, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+
+  &:hover {
+    transform: translateY(-0.25rem);
+    box-shadow: 0 10px 20px -8px rgba(0, 0, 0, 0.1);
+    border-color: $primary-green;
+    background-color: rgba(0, 109, 56, 0.02);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
   }
 }

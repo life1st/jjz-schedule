@@ -10,6 +10,7 @@ import 'react-calendar/dist/Calendar.css'
 import { QRCodeSVG } from 'qrcode.react'
 
 import { ExportDevice, DEVICE_CONFIGS } from '../constants/export'
+import { serializePermits } from '../utils/shareUtils'
 
 interface ExportCalendarProps {
   permits: Permit[]
@@ -99,13 +100,16 @@ export const ExportCalendar = ({ permits, year, device, id = 'export-calendar' }
             />
           </div>
           <div className="header-qr">
-            <QRCodeSVG
-              value="https://bjjjz.vercel.app"
-              size={Math.round(110 * config.scale)}
-              level="M"
-              bgColor="rgba(255,255,255,0.1)"
-              fgColor="white"
-            />
+            <div className="qr-wrapper">
+              <QRCodeSVG
+                value={`${window.location.origin}${window.location.pathname}?data=${serializePermits(yearPermits)}`}
+                size={Math.round(110 * config.scale)}
+                level="M"
+                bgColor="rgba(255,255,255,0.1)"
+                fgColor="white"
+              />
+              <div className="qr-hint">查看该方案</div>
+            </div>
           </div>
         </div>
 
