@@ -285,6 +285,14 @@
     bottom: 12px; // Move up to avoid temp permit bar
   }
 }
+&.is-workday {
+  color: $text-dark !important;
+  font-weight: 400;
+
+  abbr {
+    color: $text-dark !important;
+  }
+}
 }
 
 .react-calendar__navigation button {

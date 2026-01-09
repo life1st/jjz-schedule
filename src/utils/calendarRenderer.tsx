@@ -128,5 +128,11 @@ export const getTileClassName = (date: Date, permits: Permit[]) => {
     classes.push('is-today')
   }
 
+  // Official Holiday/Workday Logic
+  const holidayData = HolidayUtil.getHoliday(checkDate.format('YYYY-MM-DD'))
+  if (holidayData && holidayData.isWork()) {
+    classes.push('is-workday')
+  }
+
   return classes.join(' ')
 }
