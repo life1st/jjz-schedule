@@ -62,7 +62,7 @@
 
         &.active {
           background-color: $primary-green;
-            color: white;
+          color: white;
           box-shadow: $shadow-md;
           transform: scale(1.05);
         }
@@ -72,7 +72,7 @@
     .export-btn {
       padding: 0.625rem 2rem;
       background-color: $primary-green;
-        color: white;
+      color: white;
       border-radius: 1rem;
       font-weight: 900;
       box-shadow: $shadow-xl;
@@ -86,7 +86,7 @@
       &:hover:not(:disabled) {
         transform: translateY(-0.25rem);
         box-shadow: 0 15px 30px -8px rgba(0, 109, 56, 0.3);
-          background-color: $primary-green-hover;
+        background-color: $primary-green-hover;
       }
 
       &:active:not(:disabled) {
@@ -100,30 +100,111 @@
         filter: saturate(0);
       }
     }
-.share-btn-header {
-  padding: 0.625rem 2rem;
-  background-color: white;
-  color: $primary-green;
-  border-radius: 1rem;
-  font-weight: 900;
-  box-shadow: $shadow-md;
-  transition: $transition-base;
-  border: 2px solid rgba(0, 109, 56, 0.2);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
 
-  &:hover {
-    transform: translateY(-0.25rem);
-    box-shadow: 0 10px 20px -8px rgba(0, 0, 0, 0.1);
-    border-color: $primary-green;
-    background-color: rgba(0, 109, 56, 0.02);
+        .share-btn-header {
+          padding: 0.625rem 2rem;
+          background-color: white;
+          color: $primary-green;
+          border-radius: 1rem;
+          font-weight: 900;
+          box-shadow: $shadow-md;
+          transition: $transition-base;
+          border: 2px solid rgba(0, 109, 56, 0.2);
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          cursor: pointer;
+
+      &:hover {
+          transform: translateY(-0.25rem);
+          box-shadow: 0 10px 20px -8px rgba(0, 0, 0, 0.1);
+          border-color: $primary-green;
+          background-color: rgba(0, 109, 56, 0.02);
+        }
+
+            &:active {
+              transform: scale(0.95);
+            }
+            }
+  }
+.share-url-display {
+  margin-top: 1.5rem;
+  animation: fadeInDown 0.3s ease-out;
+
+  .url-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    background-color: rgba(0, 109, 56, 0.05);
+    padding: 0.75rem 1.25rem;
+    border-radius: 0.75rem;
+    border: 1px dashed rgba(0, 109, 56, 0.2);
+    max-width: 800px;
+    margin: 0 auto;
+
+    .url-label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: $primary-green;
+      white-space: nowrap;
+    }
+
+    .url-text {
+      font-family: monospace;
+      font-size: 0.875rem;
+      color: $text-gray;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      background-color: white;
+      padding: 0.15rem 0.5rem;
+      border-radius: 0.25rem;
+      border: 1px solid #e2e8f0;
+      flex: 1;
+      text-align: left;
+    }
+
+    .copy-again-btn {
+      padding: 0.4rem 1rem;
+      background-color: $primary-green;
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+
+      &:hover {
+        background-color: $primary-green-hover;
+      }
+
+      &:active {
+        transform: scale(0.95);
+      }
+    }
   }
 
-  &:active {
-    transform: scale(0.95);
+  .share-tip {
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    color: $text-gray;
+    opacity: 0.8;
+    text-align: center;
   }
 }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

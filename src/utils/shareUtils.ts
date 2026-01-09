@@ -1,5 +1,8 @@
 import dayjs from 'dayjs'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
 import { Permit, PermitType } from '../types/permit'
+
+dayjs.extend(customParseFormat)
 
 /**
  * Serializes an array of permits into a compact string format for URL sharing.

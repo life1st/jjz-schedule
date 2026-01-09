@@ -26,6 +26,8 @@ function SchedulePage() {
   const [currentPlanId, setCurrentPlanId] = useState<string | null>(null)
   const [exportDevice, setExportDevice] = useState<ExportDevice>('auto')
   const [isTempMode, setIsTempMode] = useState(false)
+  const [shareUrl, setShareUrl] = useState<string | null>(null)
+  const [showShareSuccess, setShowShareSuccess] = useState(false)
 
   // Helper to update state and localStorage simultaneously
   const updatePermits = (newPermits: Permit[]) => {
@@ -168,15 +170,18 @@ function SchedulePage() {
     const data = serializePermits(permits)
     const url = new URL(window.location.href)
     url.searchParams.set('data', data)
+    const shareLink = url.toString()
+
+    setShareUrl(shareLink)
 
     // Copy to clipboard
-    navigator.clipboard.writeText(url.toString())
+    navigator.clipboard.writeText(shareLink)
       .then(() => {
-        alert('分享链接已复制到剪贴板')
+        setShowShareSuccess(true)
+        setTimeout(() => setShowShareSuccess(false), 3000)
       })
       .catch(err => {
         console.error('Failed to copy share link:', err)
-        alert('复制链接失败，请手动复制浏览器地址栏')
       })
   }
 
@@ -364,6 +369,28 @@ function SchedulePage() {
             🔗 分享
           </button>
         </div>
+
+        {shareUrl && (
+          <div className="share-url-display">
+            <div className="url-container">
+              <span className="url-label">分享链接:</span>
+              <code className="url-text">{shareUrl}</code>
+              <button
+                className="copy-again-btn"
+                onClick={() => {
+                  if (shareUrl) {
+                    navigator.clipboard.writeText(shareUrl)
+                    setShowShareSuccess(true)
+                    setTimeout(() => setShowShareSuccess(false), 2000)
+                  }
+                }}
+              >
+                {showShareSuccess ? '✅ 已复制' : '复制'}
+              </button>
+            </div>
+            <p className="share-tip">链接已自动复制，也可手动复制上方链接分享给好友</p>
+          </div>
+        )}
       </header>
 
       <div className="content-container">
