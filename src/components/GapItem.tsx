@@ -1,7 +1,8 @@
 import React from 'react';
 import dayjs from 'dayjs';
 // @ts-ignore
-import { HolidayUtil } from 'lunar-javascript';
+import { HolidayUtil, Solar } from 'lunar-javascript';
+import { FestivalUtil } from '../utils/FestivalUtil';
 
 interface GapItemProps {
   prevEndDate: Date;
@@ -28,8 +29,12 @@ export const GapItem: React.FC<GapItemProps> = ({ prevEndDate, currentStartDate,
   let current = start;
   while (current.isBefore(end) || current.isSame(end, 'day')) {
     const holiday = HolidayUtil.getHoliday(current.format('YYYY-MM-DD'));
+    const festival = FestivalUtil.getFestival(current.toDate());
+
     if (holiday && !holiday.isWork()) {
       labels.add(holiday.getName());
+    } else if (festival) {
+      labels.add(festival);
     }
     current = current.add(1, 'day');
   }

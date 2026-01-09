@@ -2,6 +2,7 @@ import dayjs from 'dayjs'
 // @ts-ignore
 import { Solar, HolidayUtil } from 'lunar-javascript'
 import { Permit } from '../types/permit'
+import { FestivalUtil } from './FestivalUtil'
 
 // Check if a date is within any existing permit
 export const isDateInPermit = (date: Date, permits: Permit[]): boolean => {
@@ -20,28 +21,28 @@ export const renderTileContent = (date: Date) => {
   const solar = Solar.fromDate(date)
   const lunar = solar.getLunar()
   
-  // Lunar Info
-  const festivals = lunar.getFestivals()
-  const lunarText = festivals.length > 0 ? festivals[0] : lunar.getDayInChinese()
+  // Basic Lunar date (e.g. "初一", "腊月廿八")
+  const lunarDateText = lunar.getDayInChinese()
 
   // Solar/Government Holiday Info
   const dateStr = dayjs(date).format('YYYY-MM-DD')
   const holidayData = HolidayUtil.getHoliday(dateStr)
+  const festivalName = FestivalUtil.getFestival(date)
 
-  // Identify if holiday is a Lunar holiday
-  const isLunarHoliday = holidayData && ['春节', '清明节', '端午节', '中秋节'].includes(holidayData.getName())
+  // Decide what name to display (Priority: Official Holiday > Custom Festival)
+  const holidayName = holidayData && !holidayData.isWork() ? holidayData.getName() : null
+  const displayedName = holidayName || festivalName
 
-  let shouldShowLunar = false
-  
-  if (holidayData) {
-      // Only show Lunar if it is a Lunar Festival (vacation or markup workday)
-      shouldShowLunar = !!isLunarHoliday
-  }
+  // Determine if we should show the lunar subtitle
+  const lunarHolidays = ['春节', '清明节', '端午节', '中秋节']
+  let shouldShowLunar = (holidayData && lunarHolidays.includes(holidayData.getName())) ||
+    (!holidayData && festivalName && lunarHolidays.includes(festivalName)) ||
+    FestivalUtil.isInSpringFestivalRange(date)
 
-  if (holidayData && !holidayData.isWork()) {
+  if (displayedName && (!holidayData || !holidayData.isWork())) {
     content.push(
       <div key="holiday" className="holiday-text">
-        {holidayData.getName()}
+        {displayedName}
       </div>
     )
   } else if (holidayData && holidayData.isWork()) {
@@ -50,10 +51,11 @@ export const renderTileContent = (date: Date) => {
     )
   }
 
+  // Lunar Subtitle Rendering
   if (shouldShowLunar) {
     content.push(
       <div key="lunar" className="lunar-text">
-        {lunarText}
+        {lunarDateText}
       </div>
     )
   }
