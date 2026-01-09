@@ -341,6 +341,7 @@ function SchedulePage() {
       const dataUrl = await toJpeg(element, {
         cacheBust: true,
         quality: 0.9,
+        pixelRatio: window.devicePixelRatio,
         width: config.width,
         height: config.height || element.scrollHeight || element.offsetHeight,
         style: {
