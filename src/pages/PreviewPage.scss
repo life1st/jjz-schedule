@@ -2,18 +2,18 @@
 
 .preview-page {
     width: 100vw;
-    padding: 60px 0 120px;
+    padding: 80px 40px 120px;
     display: flex;
     flex-direction: column;
     background-color: #f3f4f6;
-    overflow: hidden;
+    // overflow: hidden;
     position: relative; // For fixed children
 
     .floating-back-btn {
         position: fixed;
         top: 24px;
         left: 24px;
-        z-index: 100;
+        z-index: 10;
         background-color: white;
         border: 1px solid #e5e7eb;
         padding: 0.75rem 1.25rem;
@@ -70,3 +70,4 @@
 // Modular Imports for the preview components
 @import 'styles/calendar';
 @import 'styles/export';
+@import 'styles/preview-toolbar';
