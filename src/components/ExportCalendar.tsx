@@ -21,12 +21,14 @@ interface ExportCalendarProps {
 
 export const ExportCalendar = ({ permits, year, device, id = 'export-calendar' }: ExportCalendarProps) => {
   const [scale, setScale] = useState(1)
+  const [config, setConfig] = useState(DEVICE_CONFIGS[device])
+  const [isLoaded, setIsLoaded] = useState(false)
+
   const calendarRef = useRef<HTMLDivElement>(null)
   const headerRef = useRef<HTMLDivElement>(null)
 
   if (permits.length === 0) return null
 
-  const config = DEVICE_CONFIGS[device]
   const isDesktop = device === 'desktop'
 
   // Filter permits that START in this year for the quota display
@@ -77,16 +79,47 @@ export const ExportCalendar = ({ permits, year, device, id = 'export-calendar' }
     }
   }, [])
 
+  useEffect(() => {
+    const isAuto = device === 'auto'
+    if (isAuto) {
+      const ITEM_WIDTH = 330
+      const ITEM_HEIGHT = Math.floor((ITEM_WIDTH / 360) * 320)
+      const pageWidth = window.innerWidth
+      const headerRect = headerRef.current?.getBoundingClientRect()
+      const autoConfig = DEVICE_CONFIGS['auto']
+
+      const rowCount = Math.min(Math.floor(pageWidth / ITEM_WIDTH), 4)
+
+      const calendarHeight = (12 / rowCount) * ITEM_HEIGHT
+      const containerHeight = window.innerHeight - (headerRect?.height || 120) - (autoConfig.padding * 2 || 0)
+      const scale = Number((containerHeight / calendarHeight).toFixed(2))
+
+      setConfig({
+        ...autoConfig,
+        width: pageWidth,
+        cols: rowCount,
+        scale
+      })
+    } else {
+      setConfig(DEVICE_CONFIGS[device])
+    }
+    setIsLoaded(true)
+    return () => {
+      setIsLoaded(false)
+    }
+  }, [device])
+
   return (
     <div 
       id={id}
       className={`export-calendar-container device-${device} ${id === 'preview-calendar' ? 'is-preview' : ''}`}
       style={{
-        width: `${config.width}px`,
-        height: `${config.height}px`,
+        width: config.width,
+        height: config.height,
         padding: config.padding,
         '--export-scale': config.scale,
-        justifyContent: 'flex-start'
+        justifyContent: 'flex-start',
+        opacity: isLoaded ? 1 : 0
       } as React.CSSProperties}
     >
       <div className="export-header" ref={headerRef}>
