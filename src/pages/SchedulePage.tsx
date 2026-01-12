@@ -13,7 +13,7 @@ import { ExportDevice, DEVICE_CONFIGS } from '../constants/export'
 import 'react-calendar/dist/Calendar.css'
 import './SchedulePage.scss'
 import { toJpeg } from 'html-to-image'
-import { serializePermits, deserializePermits } from '../utils/shareUtils'
+import { serializePermits, deserializePermits, loadPermitsFromStorage } from '../utils/shareUtils'
 
 const STORAGE_KEY = 'jjz-schedule-permits'
 const PLANS_STORAGE_KEY = 'jjz-schedule-plans'
@@ -83,41 +83,15 @@ function SchedulePage() {
     }
 
     // 2. Load Current Permits (Legacy or current active)
-    const stored = localStorage.getItem(STORAGE_KEY)
-    if (stored) {
-      try {
-        let permitsWithDates: Permit[] = deserializePermits(stored)
+    const storedPermits = loadPermitsFromStorage(STORAGE_KEY)
+    if (storedPermits.length > 0) {
+      setPermits(storedPermits)
 
-        // If no permits found via compact format, try legacy JSON format
-        if (permitsWithDates.length === 0) {
-          try {
-            const parsed = JSON.parse(stored)
-            if (Array.isArray(parsed)) {
-              permitsWithDates = parsed.map((p: any) => ({
-                ...p,
-                startDate: new Date(p.startDate),
-                endDate: new Date(p.endDate),
-                type: p.type || 'regular',
-              }))
-            }
-          } catch (e) {
-            // Not JSON either, or malformed
-            console.warn('Stored data is neither compact format nor valid JSON array')
-          }
-        }
-
-        if (permitsWithDates.length > 0) {
-          setPermits(permitsWithDates)
-        }
-
-        // Try to match current permits with a plan if not explicitly set
-        if (loadedPlans.length > 0) {
-          const currentSerialized = serializePermits(permitsWithDates)
-          const matchingPlan = loadedPlans.find(p => serializePermits(p.permits) === currentSerialized)
-          if (matchingPlan) setCurrentPlanId(matchingPlan.id)
-        }
-      } catch (error) {
-        console.error('Failed to load permits:', error)
+      // Try to match current permits with a plan if not explicitly set
+      if (loadedPlans.length > 0) {
+        const currentSerialized = serializePermits(storedPermits)
+        const matchingPlan = loadedPlans.find(p => serializePermits(p.permits) === currentSerialized)
+        if (matchingPlan) setCurrentPlanId(matchingPlan.id)
       }
     }
 
@@ -337,7 +311,6 @@ function SchedulePage() {
 
     const config = DEVICE_CONFIGS[exportDevice]
 
-    console.log(config, 'confg')
     try {
       const dataUrl = await toJpeg(element, {
         cacheBust: true,

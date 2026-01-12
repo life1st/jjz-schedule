@@ -27,6 +27,7 @@ export const ExportCalendar = ({ permits, year, device, id = 'export-calendar' }
   if (permits.length === 0) return null
 
   const config = DEVICE_CONFIGS[device]
+  const isDesktop = device === 'desktop'
 
   // Filter permits that START in this year for the quota display
   const regularStarts = permits.filter(p => (!p.type || p.type === 'regular') && dayjs(p.startDate).year() === year)
@@ -69,7 +70,6 @@ export const ExportCalendar = ({ permits, year, device, id = 'export-calendar' }
   useEffect(() => {
     if (calendarRef.current && config.height) {
       const calendarRect = calendarRef.current.getBoundingClientRect()
-      // const scale = Math.min(contentHeight / calendarRect.height, config.width / calendarRect.width)
       const scale = Number((config.height * 0.7 / calendarRect.height).toFixed(2))
       if (scale) {
         setScale(scale)
@@ -137,7 +137,7 @@ export const ExportCalendar = ({ permits, year, device, id = 'export-calendar' }
         </div>
       </div>
 
-      <Copyright className="export-footer" />
+      <Copyright className="export-footer" style={{ marginTop: isDesktop ? -10 : '' }} />
     </div>
   )
 }

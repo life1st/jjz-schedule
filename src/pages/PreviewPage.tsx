@@ -3,6 +3,7 @@ import { useNavigate, useLocation, useParams } from 'react-router-dom'
 import { ExportCalendar } from '../components/ExportCalendar'
 import { Permit } from '../types/permit'
 import { ExportDevice } from '../constants/export'
+import { loadPermitsFromStorage } from '../utils/shareUtils'
 import './PreviewPage.scss'
 
 const STORAGE_KEY = 'jjz-schedule-permits'
@@ -18,20 +19,9 @@ export default function PreviewPage() {
 
   useEffect(() => {
     // Load permits from localStorage
-    const stored = localStorage.getItem(STORAGE_KEY)
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored)
-        const permitsWithDates = parsed.map((p: any) => ({
-          ...p,
-          startDate: new Date(p.startDate),
-          endDate: new Date(p.endDate),
-        }))
-        setPermits(permitsWithDates)
-      } catch (error) {
-        setIsEmpty(true)
-        console.error('Failed to load permits:', error)
-      }
+    const storedPermits = loadPermitsFromStorage(STORAGE_KEY)
+    if (storedPermits.length > 0) {
+      setPermits(storedPermits)
     } else {
       setIsEmpty(true)
     }

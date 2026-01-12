@@ -107,3 +107,37 @@ export const deserializePermits = (data: string): Permit[] => {
 
   return permits
 }
+
+/**
+ * Loads permits from localStorage with robust fallback support.
+ * Prioritizes compact format (deserializePermits), falls back to legacy JSON.
+ */
+export const loadPermitsFromStorage = (key: string): Permit[] => {
+  const stored = localStorage.getItem(key)
+  if (!stored) return []
+
+  try {
+    // 1. Try compact format
+    const permits = deserializePermits(stored)
+    if (permits.length > 0) return permits
+
+    // 2. Fallback to legacy JSON
+    try {
+      const parsed = JSON.parse(stored)
+      if (Array.isArray(parsed)) {
+        return parsed.map((p: any) => ({
+          ...p,
+          startDate: new Date(p.startDate),
+          endDate: new Date(p.endDate),
+          type: p.type || 'regular',
+        }))
+      }
+    } catch (e) {
+      console.warn('Stored data is neither compact format nor valid JSON array')
+    }
+  } catch (error) {
+    console.error('Failed to load permits:', error)
+  }
+
+  return []
+}
