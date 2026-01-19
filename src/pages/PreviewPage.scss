@@ -9,35 +9,11 @@
     // overflow: hidden;
     position: relative; // For fixed children
 
-    .floating-back-btn {
+    .back-btn-container {
         position: fixed;
         top: 24px;
         left: 24px;
         z-index: 10;
-        background-color: white;
-        border: 1px solid #e5e7eb;
-        padding: 0.75rem 1.25rem;
-        border-radius: 99px;
-        font-size: 0.875rem;
-        font-weight: 600;
-        color: $text-dark;
-        cursor: pointer;
-        transition: all 0.2s;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-
-        &:hover {
-            background-color: #f9fafb;
-            border-color: #d1d5db;
-            transform: scale(1.05) translateX(-2px);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-        }
-
-        .icon {
-            font-size: 1.1rem;
-        }
     }
 
         .preview-empty {
