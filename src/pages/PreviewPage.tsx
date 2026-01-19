@@ -5,7 +5,7 @@ import { Permit } from '../types/permit'
 import { ExportDevice } from '../constants/export'
 import { loadPermitsFromStorage } from '../utils/shareUtils'
 import { PreviewToolbar } from '../components/PreviewToolbar'
-import { ActionButton, ActionItem } from '../components/common/ActionButton'
+import { ActionToolbar, ActionItem } from '../components/common/ActionButton'
 import './PreviewPage.scss'
 
 const STORAGE_KEY = 'jjz-schedule-permits'
@@ -56,20 +56,20 @@ export default function PreviewPage() {
     }
   }
 
-  const backAction: ActionItem = {
-    label: (
-      <>
-        <span className="icon">←</span> 返回规划
-      </>
-    ),
-    onClick: handleBack,
-    title: '返回规划页'
-  }
-
   return (
     <div className="preview-page" id="preview-container">
       <div className="back-btn-container">
-        <ActionButton actions={[backAction]} className="back-btn" />
+        <ActionToolbar className="back-btn">
+          <ActionItem
+            label={
+              <>
+                <span className="icon">←</span> 返回规划
+              </>
+            }
+            onClick={handleBack}
+            title="返回规划页"
+          />
+        </ActionToolbar>
       </div>
 
       {permits.length ? (

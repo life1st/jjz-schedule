@@ -12,6 +12,7 @@ import { ExportCalendar } from '../components/ExportCalendar'
 import { ExportDevice, DEVICE_CONFIGS } from '../constants/export'
 import 'react-calendar/dist/Calendar.css'
 import './SchedulePage.scss'
+import { ActionToolbar, ActionGroup, ActionItem } from '../components/common/ActionButton'
 import { toJpeg } from 'html-to-image'
 import { serializePermits, deserializePermits, loadPermitsFromStorage } from '../utils/shareUtils'
 
@@ -349,41 +350,42 @@ function SchedulePage() {
           regularCount={regularInYear.length}
           shiftCount={shiftCount}
         />
-        <div className="export-controls">
-          <div className="device-selector">
-            {(['auto', 'desktop', 'ipad', 'iphone'] as ExportDevice[]).map(d => (
-              <button
-                key={d}
-                className={`device-btn ${exportDevice === d ? 'active' : ''}`}
-                onClick={() => setExportDevice(d)}
+        <div className="export-controls-container">
+          <ActionToolbar className="header-toolbar">
+            <ActionGroup>
+              {(['auto', 'desktop', 'ipad', 'iphone'] as ExportDevice[]).map(d => (
+                <ActionItem
+                  key={d}
+                  label={d === 'auto' ? '自适应' : d.toUpperCase()}
+                  onClick={() => setExportDevice(d)}
+                  active={exportDevice === d}
+                  disabled={isExporting}
+                />
+              ))}
+            </ActionGroup>
+            <ActionGroup>
+              <ActionItem
+                label="导出"
+                labelPrefix="📸 "
+                onClick={handleExportImage}
+                loading={isExporting}
+                title="导出为图片"
+              />
+            </ActionGroup>
+          </ActionToolbar>
+
+          <ActionToolbar className="header-toolbar">
+
+            <ActionGroup>
+              <ActionItem
+                label="分享"
+                labelPrefix="🔗 "
+                onClick={handleShare}
                 disabled={isExporting}
-              >
-                {d === 'auto' ? '自适应' : d.toUpperCase()}
-              </button>
-            ))}
-          </div>
-          <button
-            className="export-btn"
-            onClick={handleExportImage}
-            disabled={isExporting}
-            title="导出为图片"
-          >
-            {isExporting ? (
-              <>
-                <span className="loading-icon">⌛</span> 导出中...
-              </>
-            ) : (
-              '📸 导出'
-            )}
-          </button>
-          <button
-            className="share-btn-header"
-            onClick={handleShare}
-            disabled={isExporting}
-            title="分享当前排期"
-          >
-            🔗 分享
-          </button>
+                title="分享当前排期"
+              />
+            </ActionGroup>
+          </ActionToolbar>
         </div>
 
         {shareUrl && (

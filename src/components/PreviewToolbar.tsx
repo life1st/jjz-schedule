@@ -1,5 +1,5 @@
 import { ExportDevice } from '../constants/export'
-import { ActionButton, ActionItem } from './common/ActionButton'
+import { ActionToolbar, ActionGroup, ActionItem } from './common/ActionButton'
 
 interface PreviewToolbarProps {
   currentDevice: ExportDevice
@@ -10,26 +10,30 @@ interface PreviewToolbarProps {
 export const PreviewToolbar = ({ currentDevice, onDeviceChange, onFullscreen }: PreviewToolbarProps) => {
   const devices: ExportDevice[] = ['auto', 'desktop', 'ipad', 'iphone']
 
-  const deviceActions: ActionItem[] = devices.map(device => ({
-    label: device === 'auto' ? '自适应' : device.toUpperCase(),
-    onClick: () => onDeviceChange(device),
-    active: currentDevice === device,
-    title: device === 'auto' ? '自适应' : device.toUpperCase()
-  }))
-
-  const fullscreenAction: ActionItem = {
-    label: (
-      <>
-        <span className="icon">⛶</span> 全屏
-      </>
-    ),
-    onClick: onFullscreen,
-    title: '全屏预览'
-  }
-
   return (
     <div className="preview-toolbar-container">
-      <ActionButton actions={[deviceActions, [fullscreenAction]]} className="preview-toolbar" />
+      <ActionToolbar className="preview-toolbar">
+        <ActionGroup>
+          {devices.map(device => (
+            <ActionItem
+              key={device}
+              label={device === 'auto' ? '自适应' : device.toUpperCase()}
+              onClick={() => onDeviceChange(device)}
+              active={currentDevice === device}
+              title={device === 'auto' ? '自适应' : device.toUpperCase()}
+            />
+          ))}
+        </ActionGroup>
+        <ActionItem
+          label={
+            <>
+              <span className="icon">⛶</span> 全屏
+            </>
+          }
+          onClick={onFullscreen}
+          title="全屏预览"
+        />
+      </ActionToolbar>
     </div>
   )
 }

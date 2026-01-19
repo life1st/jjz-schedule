@@ -1,43 +1,83 @@
 import React from 'react'
 import './ActionButton.scss'
 
-export interface ActionItem {
+export interface ActionItemProps {
   label: React.ReactNode
   onClick: () => void
   active?: boolean
+  disabled?: boolean
+  loading?: boolean
   title?: string
   className?: string
+  labelPrefix?: React.ReactNode
 }
 
-interface ActionButtonProps {
-  actions: ActionItem[] | ActionItem[][]
+export const ActionItem = ({
+  label,
+  onClick,
+  active,
+  disabled,
+  loading,
+  title,
+  className = '',
+  labelPrefix
+}: ActionItemProps) => {
+  return (
+    <button
+      className={`action-btn ${active ? 'active' : ''} ${className}`}
+      onClick={onClick}
+      title={title}
+      disabled={disabled || loading}
+    >
+      {!loading && labelPrefix}
+      {loading && <span className="loading-icon">⌛</span>}
+      {label}
+    </button>
+  )
+}
+
+interface ActionGroupProps {
+  children: React.ReactNode
   className?: string
 }
 
-export const ActionButton = ({ actions, className = '' }: ActionButtonProps) => {
-  // Normalize actions to ActionItem[][]
-  const groups = Array.isArray(actions[0])
-    ? (actions as ActionItem[][])
-    : [actions as ActionItem[]]
+export const ActionGroup = ({ children, className = '' }: ActionGroupProps) => {
+  return <div className={`action-group ${className}`}>{children}</div>
+}
 
-  const totalActions = groups.reduce((acc, group) => acc + group.length, 0)
+interface ActionToolbarProps {
+  children: React.ReactNode
+  className?: string
+}
+
+export const ActionToolbar = ({ children, className = '' }: ActionToolbarProps) => {
+  // Flatten and count children to determine if it's a single button or not
+  const childrenArray = React.Children.toArray(children)
+
+  // Count total buttons to decide on .is-single or .is-group
+  let totalItems = 0
+  childrenArray.forEach(child => {
+    if (React.isValidElement(child)) {
+      if (child.type === ActionGroup) {
+        totalItems += React.Children.count((child.props as any).children)
+      } else {
+        totalItems += 1
+      }
+    }
+  })
 
   return (
-    <div className={`action-container ${className} ${totalActions > 1 ? 'is-group' : 'is-single'}`}>
-      {groups.map((group, groupIndex) => (
-        <div key={groupIndex} className="action-group">
-          {group.map((item, itemIndex) => (
-            <button
-              key={itemIndex}
-              className={`action-btn ${item.active ? 'active' : ''} ${item.className || ''}`}
-              onClick={item.onClick}
-              title={item.title}
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
-      ))}
+    <div className={`action-container ${className} ${totalItems > 1 ? 'is-group' : 'is-single'}`}>
+      {React.Children.map(children, (child) => {
+        if (React.isValidElement(child)) {
+          // Wrap loose ActionItems in an ActionGroup automatically if they aren't already
+          if (child.type === ActionItem) {
+            return <ActionGroup>{child}</ActionGroup>
+          }
+          return child
+        }
+        return null
+      })}
     </div>
   )
 }
