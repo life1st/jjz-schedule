@@ -1,4 +1,4 @@
-@import 'variables';
+@use 'variables' as *;
 
 .permits-section {
   background-color: $card-bg;
@@ -359,16 +359,17 @@
     .permit-number {
       color: white;
       background: #f59e0b;
+    }
+    
+    &:hover {
+      .remove-button {
+        opacity: 1;
+        transform: scale(1);
       }
-      }
-      
-      &:hover {
-        .remove-button {
-          opacity: 1;
-          transform: scale(1);
     }
   }
 }
+
 
 .permit-gap {
   display: flex;

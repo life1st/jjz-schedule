@@ -15,6 +15,7 @@ import './SchedulePage.scss'
 import { ActionToolbar, ActionGroup, ActionItem } from '../components/common/ActionButton'
 import { toJpeg } from 'html-to-image'
 import { serializePermits, deserializePermits, loadPermitsFromStorage } from '../utils/shareUtils'
+import { EditNameModal } from '../components/EditNameModal'
 
 const STORAGE_KEY = 'jjz-schedule-permits'
 const PLANS_STORAGE_KEY = 'jjz-schedule-plans'
@@ -29,6 +30,7 @@ function SchedulePage() {
   const [isTempMode, setIsTempMode] = useState(false)
   const [shareUrl, setShareUrl] = useState<string | null>(null)
   const [showShareSuccess, setShowShareSuccess] = useState(false)
+  const [editingPlan, setEditingPlan] = useState<Plan | null>(null)
 
   // Helper to update state and localStorage simultaneously
   const updatePermits = (newPermits: Permit[]) => {
@@ -268,6 +270,15 @@ function SchedulePage() {
     }
   }
 
+  const handleUpdatePlanName = (id: string, newName: string) => {
+    const updatedPlans = plans.map(p =>
+      p.id === id ? { ...p, name: newName } : p
+    )
+    updatePlans(updatedPlans)
+    setEditingPlan(null)
+  }
+
+
   const [viewDate, setViewDate] = useState(new Date())
   const [isExporting, setIsExporting] = useState(false)
 
@@ -343,6 +354,14 @@ function SchedulePage() {
     <div className="schedule-page">
       {isExporting && <ExportCalendar permits={permits} year={currentYear} device={exportDevice} />}
       
+      {editingPlan && (
+        <EditNameModal
+          initialName={editingPlan.name}
+          onSave={(newName) => handleUpdatePlanName(editingPlan.id, newName)}
+          onClose={() => setEditingPlan(null)}
+        />
+      )}
+
       <header className="page-header">
         <h1>进京证排期工具</h1>
         <SummaryInfo
@@ -470,9 +489,16 @@ function SchedulePage() {
                   <div
                     key={plan.id}
                     className={`plan-tab ${currentPlanId === plan.id ? 'active' : ''}`}
-                    onClick={() => handleSwitchPlan(plan.id)}
+                    onClick={() => {
+                      if (currentPlanId === plan.id) {
+                        setEditingPlan(plan)
+                      } else {
+                        handleSwitchPlan(plan.id)
+                      }
+                    }}
                   >
                     <span className="plan-name">{plan.name}</span>
+
                     <button
                       className="remove-plan-btn"
                       onClick={(e) => handleRemovePlan(e, plan.id)}
@@ -639,6 +665,7 @@ function SchedulePage() {
                                         </li>
                                       </React.Fragment>
                                     );
+
                                   })}
                                 </ul>
                               </div>
@@ -658,3 +685,4 @@ function SchedulePage() {
 }
 
 export default SchedulePage
+

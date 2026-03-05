@@ -1,4 +1,4 @@
-@import 'variables';
+@use 'variables' as *;
 
 .export-calendar-container {
   position: absolute;

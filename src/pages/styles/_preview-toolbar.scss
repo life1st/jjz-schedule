@@ -1,4 +1,4 @@
-@import 'variables';
+@use 'variables' as *;
 
 .preview-toolbar-container {
   position: fixed;

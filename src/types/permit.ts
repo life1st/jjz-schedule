@@ -7,6 +7,8 @@ export interface Permit {
   type: PermitType
 }
 
+
+
 export interface Plan {
   id: string
   name: string

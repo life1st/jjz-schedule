@@ -1,6 +1,10 @@
-@import 'styles/variables';
+@use 'styles/variables' as *;
+@use 'styles/calendar';
+@use 'styles/export';
+@use 'styles/preview-toolbar';
 
 .preview-page {
+
     width: 100vw;
     padding: 80px 40px 120px;
     display: flex;
@@ -44,6 +48,4 @@
 }
 
 // Modular Imports for the preview components
-@import 'styles/calendar';
-@import 'styles/export';
-@import 'styles/preview-toolbar';
+

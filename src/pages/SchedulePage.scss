@@ -1,6 +1,11 @@
-@import 'styles/variables';
+@use 'styles/variables' as *;
+@use 'styles/header';
+@use 'styles/calendar';
+@use 'styles/permits';
+@use 'styles/export';
 
 .schedule-page {
+
   min-height: 100vh;
   padding: 1rem;
   padding-bottom: 5rem;
@@ -35,7 +40,4 @@
 }
 
 // Modular Imports
-@import 'styles/header';
-@import 'styles/calendar';
-@import 'styles/permits';
-@import 'styles/export';
+
